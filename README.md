@@ -1,6 +1,6 @@
 # Group Project - *finderApp*
 
-**finderApp** is an android app that
+**finderApp** is an android app that lets people click pictures and tag them with the geographic coordinates of where they were taken. These pictures are then laid out on a map-interface that other users can view and interact with. The app then lets users quickly find pictures of a desired geographic location to find out more about it.
 
 Time spent: **X** hours spent in total
 
@@ -12,6 +12,7 @@ The following **required** functionality is completed:
 * [ ] User can view a map view of their current location with points visited by their friends marked.
 * [ ] On clicking on these points, user should be able to see a detail view of the picture taken.
 * [ ] User can switch tabs to access the camera and take a picture
+  * [ ] They can caption the picture and thumbs up or down.
   * [ ] The app should save the picture to the db with the location
   * [ ] If multiple pictures are taken in a time period (still to decide), app should be able to club together (sense of a trip)
 * [ ] User can view his profile from the action bar, which should bring up a navigation bar.
@@ -23,6 +24,8 @@ The following **optional** features are implemented:
 * [ ] If a friend posts a picture in an x-mile radius, User should get a push notification
 * [ ] Create a splash screen with a video in the background
 * [ ] In the trips taken, the first picture should be a summary picture on the map
+* [ ] When we show points on the map where friends have visited, embed a card view of the picture on the map for a quick view.
+* [ ] Capability to see friend's profile, with their trips.
 
 The following **bonus** features are implemented:
 
