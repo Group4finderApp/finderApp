@@ -3,6 +3,7 @@ package com.codepath.finderapp;
 import android.app.Application;
 
 import com.parse.Parse;
+import com.parse.ParseFacebookUtils;
 import com.parse.interceptors.ParseLogInterceptor;
 
 /**
@@ -22,6 +23,9 @@ public class finderAppApplication extends Application {
                 .clientKey(null)  // set explicitly unless clientKey is explicitly configured on Parse server
                 .addNetworkInterceptor(new ParseLogInterceptor())
                 .server("http://finderkeeper.herokuapp.com/parse").build());
+
+        // ParseFacebookUtils should initialize the Facebook SDK for you
+        ParseFacebookUtils.initialize(this);
     }
 
 

@@ -38,4 +38,6 @@ dependencies {
     compile 'com.parse:parse-android:1.13.1'
     compile 'com.parse:parseinterceptors:0.0.2' // for logging API calls to LogCat
     compile 'com.parse.bolts:bolts-android:1.+'
+    compile 'com.facebook.android:facebook-android-sdk:4.10.0'
+    compile 'com.parse:parsefacebookutils-v4-android:1.10.4@aar'
 }
