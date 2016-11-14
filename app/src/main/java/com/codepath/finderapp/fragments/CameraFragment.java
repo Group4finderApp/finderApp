@@ -18,7 +18,6 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.codepath.finderapp.R;
-import com.codepath.finderapp.activities.CameraPostActivity;
 import com.codepath.finderapp.activities.MainActivity;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -162,7 +161,7 @@ public class CameraFragment extends Fragment {
             }
         });
 
-        ((CameraPostActivity) getActivity()).getCurrentPicturePost().setImage(photoFile);
+        ((MainActivity) getActivity()).getCurrentPicturePost().setImage(photoFile);
 
 
     }
