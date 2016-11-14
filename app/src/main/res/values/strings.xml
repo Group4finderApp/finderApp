@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">finderApp</string>
+    <string name="compose_hint">Write Caption</string>
+    <string name="save">Save</string>
 </resources>

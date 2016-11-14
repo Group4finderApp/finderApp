@@ -1,5 +1,6 @@
 package com.codepath.finderapp.fragments;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -17,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.codepath.finderapp.R;
+import com.codepath.finderapp.activities.CameraPostActivity;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.SaveCallback;
@@ -87,7 +89,7 @@ public class CameraFragment extends Fragment {
             public void surfaceCreated(SurfaceHolder holder) {
                 try {
                     if (camera != null) {
-                        camera.setDisplayOrientation(90);
+                        camera.setDisplayOrientation(270);
                         camera.setPreviewDisplay(holder);
                         camera.startPreview();
                     }
@@ -110,6 +112,16 @@ public class CameraFragment extends Fragment {
         return v;
     }
 
+    private void startCaptionFragment() {
+
+        android.support.v4.app.FragmentTransaction transaction = getActivity().getSupportFragmentManager()
+                .beginTransaction();
+        transaction.replace(R.id.container, new SaveCaptionFragment());
+        transaction.addToBackStack("CameraFragment");
+        transaction.commit();
+
+    }
+
     /*
      * ParseQueryAdapter loads ParseFiles into a ParseImageView at whatever size
      * they are saved. Since we never need a full-size image in our app, we'll
@@ -124,7 +136,7 @@ public class CameraFragment extends Fragment {
 
         // Override Android default landscape orientation and save portrait
         Matrix matrix = new Matrix();
-        matrix.postRotate(90);
+        matrix.postRotate(270);
         Bitmap rotatedScaledMealImage = Bitmap.createBitmap(mealImageScaled, 0,
                 0, mealImageScaled.getWidth(), mealImageScaled.getHeight(),
                 matrix, true);
@@ -143,30 +155,22 @@ public class CameraFragment extends Fragment {
                             "Error saving: " + e.getMessage(),
                             Toast.LENGTH_LONG).show();
                 } else {
-                    //addPhotoToMealAndReturn(photoFile);
+                    // show transparent dialog for caption and thumbs Up or down
+                    startCaptionFragment();
                 }
             }
         });
-    }
 
-    /*
-     * Once the photo has saved successfully, we're ready to return to the
-     * NewMealFragment. When we added the CameraFragment to the back stack, we
-     * named it "NewMealFragment". Now we'll pop fragments off the back stack
-     * until we reach that Fragment.
-     */
-    /*private void addPhotoToMealAndReturn(ParseFile photoFile) {
-        ((NewMealActivity) getActivity()).getCurrentMeal().setPhotoFile(
-                photoFile);
-        FragmentManager fm = getActivity().getFragmentManager();
-        fm.popBackStack("NewMealFragment",
-                FragmentManager.POP_BACK_STACK_INCLUSIVE);
-    }*/
+        ((CameraPostActivity) getActivity()).getCurrentPicturePost().setImage(photoFile);
+
+
+    }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (camera == null) {
+
+        /*if (camera == null) {
             try {
                 camera = Camera.open();
                 photoButton.setEnabled(true);
@@ -176,15 +180,24 @@ public class CameraFragment extends Fragment {
                 Toast.makeText(getActivity(), "No camera detected",
                         Toast.LENGTH_LONG).show();
             }
+        }*/
+
+
+        String title = ((CameraPostActivity) getActivity())
+                .getCurrentPicturePost().getText();
+        if (title != null) {
+            getActivity().setResult(Activity.RESULT_OK);
+            getActivity().finish();
         }
+
     }
 
     @Override
     public void onPause() {
-        if (camera != null) {
+        /*if (camera != null) {
             camera.stopPreview();
             camera.release();
-        }
+        }*/
         super.onPause();
     }
 }
