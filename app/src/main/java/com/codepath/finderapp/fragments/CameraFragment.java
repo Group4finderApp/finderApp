@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.activities.CameraPostActivity;
+import com.codepath.finderapp.activities.MainActivity;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.SaveCallback;
@@ -183,7 +184,7 @@ public class CameraFragment extends Fragment {
         }*/
 
 
-        String title = ((CameraPostActivity) getActivity())
+        String title = ((MainActivity) getActivity())
                 .getCurrentPicturePost().getText();
         if (title != null) {
             getActivity().setResult(Activity.RESULT_OK);

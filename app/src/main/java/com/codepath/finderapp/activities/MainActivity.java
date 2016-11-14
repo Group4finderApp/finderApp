@@ -2,30 +2,54 @@ package com.codepath.finderapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.codepath.finderapp.DispatchActivity;
 import com.codepath.finderapp.R;
+import com.codepath.finderapp.adapters.HomeViewPagerAdapter;
+import com.codepath.finderapp.fragments.HomeMapView;
+import com.codepath.finderapp.models.PicturePost;
+import com.codepath.finderapp.utils.AppUtils;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.login.LoginManager;
 import com.parse.ParseUser;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.fabric.sdk.android.Fabric;
 
 
 public class MainActivity extends AppCompatActivity {
 
+    @BindView(R.id.activity_main_view_pager)
+    ViewPager viewPager;
+    @BindView(R.id.activity_main_tab)
+    TabLayout tab;
+
+    private HomeViewPagerAdapter adapter;
+    private PicturePost post;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
-
         setContentView(R.layout.activity_main);
-        Intent i = new Intent(this, CameraPostActivity.class);
-        startActivity(i);
-        
+        Fabric.with(this, new Crashlytics());
+        ButterKnife.bind(this);
+
+        post = new PicturePost();
+
+        adapter = new HomeViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(adapter);
+        tab.setupWithViewPager(viewPager);
+
+//        setContentView(R.layout.activity_main);
+//        Intent i = new Intent(this, CameraPostActivity.class);
+//        startActivity(i);
+
         // New test creation of object below
         //ParseObject testObject = new ParseObject("TestObject");
         //testObject.put("fooManisha", "barManisha");
@@ -65,5 +89,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
+    public PicturePost getCurrentPicturePost() {
+        return post;
+    }
 }
 
