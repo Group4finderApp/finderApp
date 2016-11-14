@@ -25,9 +25,9 @@ public class MainActivity extends AppCompatActivity {
         Fabric.with(this, new Crashlytics());
 
         setContentView(R.layout.activity_main);
-
         Intent i = new Intent(this, CameraPostActivity.class);
         startActivity(i);
+
         // New test creation of object below
         //ParseObject testObject = new ParseObject("TestObject");
         //testObject.put("fooManisha", "barManisha");
@@ -66,6 +66,5 @@ public class MainActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
-
 }
 
