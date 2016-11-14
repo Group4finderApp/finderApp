@@ -9,4 +9,7 @@
     <string name="parse">CodePath</string>
     <string name="slogan">The world is yours to discover</string>
     <string name="facebook_app_id">158711387930158</string>
+    <string name="invite">Invite friends</string>
+    <string name="logout">Log out</string>
+    <string name="skip">skip</string>
 </resources>
