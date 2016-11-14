@@ -31,10 +31,6 @@
             android:name="com.facebook.sdk.PERMISSIONS"
             android:value="email" />
 
-        <activity
-            android:name=".DispatchActivity"
-            android:noHistory="true" />
-
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
