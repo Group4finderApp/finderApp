@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:textColor="#000000"
+        android:id="@+id/etCaption"
+        android:background="@android:color/transparent"
+        android:maxLength="280"
+        android:layout_marginLeft="10dp"
+        android:hint="@string/compose_hint"
+        android:cursorVisible="false"
+        android:inputType="textNoSuggestions"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/imageView"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save"
+        android:backgroundTint="#1DA1F3"
+        android:textColor="#FFFFFF"
+        android:id="@+id/btnSave"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true" />
+
+    <!--
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/etCaption" /> -->
+
+
+</LinearLayout>

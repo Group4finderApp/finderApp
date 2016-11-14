@@ -6,7 +6,7 @@ android {
     buildToolsVersion "25.0.0"
     defaultConfig {
         applicationId "com.codepath.finderapp"
-        minSdkVersion 17
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -35,4 +35,9 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }
+    compile 'com.parse:parse-android:1.13.1'
+    compile 'com.parse:parseinterceptors:0.0.2' // for logging API calls to LogCat
+    compile 'com.parse.bolts:bolts-android:1.+'
+    compile 'com.facebook.android:facebook-android-sdk:4.10.0'
+    compile 'com.parse:parsefacebookutils-v4-android:1.10.4@aar'
 }
