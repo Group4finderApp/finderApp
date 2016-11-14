@@ -1,4 +1,16 @@
 <resources>
     <string name="app_name">finderApp</string>
     <string name="google_map_api_key">AIzaSyAiWAhUBJuHjU7KVxLI6jDXEVcntKMUQXk</string>
+    <string name="compose_hint">Write Caption</string>
+    <string name="save">Save</string>
+    <string name="login">Log in</string>
+    <string name="facebooklogin">Log In with facebook</string>
+    <string name="signup">Sign up</string>
+    <string name="powered_by">Powered by</string>
+    <string name="parse">CodePath</string>
+    <string name="slogan">The world is yours to discover</string>
+    <string name="facebook_app_id">158711387930158</string>
+    <string name="invite">Invite friends</string>
+    <string name="logout">Log out</string>
+    <string name="skip">skip</string>
 </resources>
