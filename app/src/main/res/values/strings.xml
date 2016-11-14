@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">finderApp</string>
+    <string name="google_map_api_key">AIzaSyAiWAhUBJuHjU7KVxLI6jDXEVcntKMUQXk</string>
 </resources>
