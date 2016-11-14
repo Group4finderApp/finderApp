@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:background="@android:color/white"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:src="@color/colorPrimary"
+        android:id="@+id/pin_view_image"
+        android:layout_width="250dp"
+        android:layout_height="180dp" />
+
+    <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="1dp"-->
+        android:background="@android:color/black"/>
+
+    <LinearLayout
+        android:background="@android:color/white"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/pin_view_profile"
+            android:layout_margin="16dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp" />
+
+        <TextView
+            android:paddingTop="16dp"
+            android:gravity="center_horizontal"
+            android:id="@+id/pin_view_caption"
+            android:layout_weight="6"
+            android:text="this is caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_margin="8dp"
+            android:id="@+id/pin_view_thumb_down"
+            android:layout_weight="1"
+            android:src="@drawable/thumb_up_outline"
+            android:layout_width="36dp"
+            android:layout_height="36dp" />
+    </LinearLayout>
+
+</LinearLayout>

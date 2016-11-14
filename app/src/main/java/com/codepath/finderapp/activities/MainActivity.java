@@ -8,6 +8,8 @@ import android.view.MenuItem;
 
 import com.codepath.finderapp.DispatchActivity;
 import com.codepath.finderapp.R;
+import com.codepath.finderapp.fragments.HomeMapView;
+import com.codepath.finderapp.utils.AppUtils;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.login.LoginManager;
 import com.parse.ParseUser;
@@ -23,9 +25,9 @@ public class MainActivity extends AppCompatActivity {
         Fabric.with(this, new Crashlytics());
 
         setContentView(R.layout.activity_main);
+
         Intent i = new Intent(this, CameraPostActivity.class);
         startActivity(i);
-        
         // New test creation of object below
         //ParseObject testObject = new ParseObject("TestObject");
         //testObject.put("fooManisha", "barManisha");
