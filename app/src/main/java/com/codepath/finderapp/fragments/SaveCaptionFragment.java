@@ -1,6 +1,7 @@
 package com.codepath.finderapp.fragments;
 
 import android.graphics.Point;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.Display;
@@ -20,6 +21,7 @@ import com.codepath.finderapp.models.PicturePost;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 /**
@@ -63,20 +65,19 @@ public class SaveCaptionFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 PicturePost post = ((MainActivity) getActivity()).getCurrentPicturePost();
-
                 // When the user clicks "Save," upload the post to Parse
                 // Add data to the post object:
                 post.setText(caption.getText().toString());
-
-                // TODO: Update location
-                ParseGeoPoint geoPoint = new ParseGeoPoint(50, -150);
+                Location myLoc = ((MainActivity) getActivity()).getCurrentLocation();
+                ParseGeoPoint geoPoint = new ParseGeoPoint(myLoc.getLatitude(), myLoc.getLongitude());
                 // Set the location to the current user's location
                 post.setLocation(geoPoint);
 
-                //ParseUser user = ParseUser.getCurrentUser();
-                //post.setUser(user);
+                ParseUser user = ParseUser.getCurrentUser();
+                post.setUser(user);
                 ParseACL acl = new ParseACL();
                 // Give public read access
+                // TODO: Update ACL
                 acl.setPublicReadAccess(true);
                 post.setACL(acl);
 

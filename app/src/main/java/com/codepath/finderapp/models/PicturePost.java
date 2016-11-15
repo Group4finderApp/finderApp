@@ -5,6 +5,7 @@ import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 /**
  * Data model for a post.
@@ -25,13 +26,13 @@ public class PicturePost extends ParseObject {
 
         public void setImage(ParseFile image) { put("image", image); }
 
-        /*public ParseUser getUser() {
+        public ParseUser getUser() {
             return getParseUser("user");
         }
 
         public void setUser(ParseUser value) {
             put("user", value);
-        }*/
+        }
 
         public ParseGeoPoint getLocation() {
             return getParseGeoPoint("location");
