@@ -3,6 +3,7 @@ package com.codepath.finderapp.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -12,8 +13,8 @@ import com.codepath.finderapp.DispatchActivity;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.HomeViewPagerAdapter;
 import com.codepath.finderapp.fragments.HomeMapView;
+import com.codepath.finderapp.fragments.SaveCaptionFragment;
 import com.codepath.finderapp.models.PicturePost;
-import com.codepath.finderapp.utils.AppUtils;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.login.LoginManager;
 import com.parse.ParseUser;
@@ -23,7 +24,8 @@ import butterknife.ButterKnife;
 import io.fabric.sdk.android.Fabric;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements
+        SaveCaptionFragment.SaveCaptionFragmentDialogListener{
 
     @BindView(R.id.activity_main_view_pager)
     ViewPager viewPager;
@@ -46,17 +48,6 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         tab.setupWithViewPager(viewPager);
 
-//        setContentView(R.layout.activity_main);
-//        Intent i = new Intent(this, CameraPostActivity.class);
-//        startActivity(i);
-
-        // New test creation of object below
-        //ParseObject testObject = new ParseObject("TestObject");
-        //testObject.put("fooManisha", "barManisha");
-        //testObject.put("sinkari", "Kassim");
-        //testObject.saveInBackground();
-
-        //Log.d("debug", ParseUser.getCurrentUser().getUsername() + " " + ParseUser.getCurrentUser().getEmail());
     }
 
     @Override
@@ -92,6 +83,22 @@ public class MainActivity extends AppCompatActivity {
 
     public PicturePost getCurrentPicturePost() {
         return post;
+    }
+
+    public void onSaveCaption() {
+
+        HomeMapView mapView = (HomeMapView) getSupportFragmentManager()
+                .findFragmentByTag("android:switcher:" + viewPager + ":" +
+                        "0");
+        Fragment currentView = getSupportFragmentManager()
+                .findFragmentByTag("android:switcher:" + viewPager + ":" +
+                        viewPager.getCurrentItem());
+
+        //if (currentView != null) {
+            //if (!(currentView instanceof HomeMapView)) {
+                viewPager.setCurrentItem(0);
+            //}
+        //}
     }
 }
 

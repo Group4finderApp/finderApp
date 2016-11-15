@@ -1,19 +1,23 @@
 package com.codepath.finderapp.fragments;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -36,7 +40,6 @@ public class CameraFragment extends Fragment {
     private SurfaceView surfaceView;
     private ParseFile photoFile;
     private ImageButton photoButton;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
@@ -114,11 +117,9 @@ public class CameraFragment extends Fragment {
 
     private void startCaptionFragment() {
 
-        android.support.v4.app.FragmentTransaction transaction = getActivity().getSupportFragmentManager()
-                .beginTransaction();
-        transaction.replace(R.id.container, new SaveCaptionFragment());
-        transaction.addToBackStack("CameraFragment");
-        transaction.commit();
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        SaveCaptionFragment saveCaptionFragment = SaveCaptionFragment.newInstance();
+        saveCaptionFragment.show(fm, "fragment_save_caption");
 
     }
 
@@ -156,12 +157,15 @@ public class CameraFragment extends Fragment {
                             Toast.LENGTH_LONG).show();
                 } else {
                     // show transparent dialog for caption and thumbs Up or down
+                    ((MainActivity) getActivity()).getCurrentPicturePost().setImage(photoFile);
+                    if (camera != null) {
+                        camera.startPreview();
+                        //camera.release();
+                    }
                     startCaptionFragment();
                 }
             }
         });
-
-        ((MainActivity) getActivity()).getCurrentPicturePost().setImage(photoFile);
 
 
     }
@@ -169,8 +173,7 @@ public class CameraFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        /*if (camera == null) {
+        if (camera == null) {
             try {
                 camera = Camera.open();
                 photoButton.setEnabled(true);
@@ -180,14 +183,6 @@ public class CameraFragment extends Fragment {
                 Toast.makeText(getActivity(), "No camera detected",
                         Toast.LENGTH_LONG).show();
             }
-        }*/
-
-
-        String title = ((MainActivity) getActivity())
-                .getCurrentPicturePost().getText();
-        if (title != null) {
-            getActivity().setResult(Activity.RESULT_OK);
-            getActivity().finish();
         }
 
     }
