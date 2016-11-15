@@ -3,21 +3,17 @@ package com.codepath.finderapp.fragments;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -92,7 +88,7 @@ public class CameraFragment extends Fragment {
             public void surfaceCreated(SurfaceHolder holder) {
                 try {
                     if (camera != null) {
-                        camera.setDisplayOrientation(270);
+                        camera.setDisplayOrientation(90);
                         camera.setPreviewDisplay(holder);
                         camera.startPreview();
                     }
