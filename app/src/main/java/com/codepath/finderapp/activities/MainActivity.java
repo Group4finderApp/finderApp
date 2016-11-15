@@ -3,9 +3,9 @@ package com.codepath.finderapp.activities;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Build;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -13,12 +13,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
-import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codepath.finderapp.DispatchActivity;
 import com.codepath.finderapp.R;
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements
     private Location currentLocation;
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
+    private CardView toolbarContainer;
     private NavigationView nvDrawer;
     private ActionBarDrawerToggle drawerToggle;
 
@@ -95,10 +98,12 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         Fabric.with(this, new Crashlytics());
         ButterKnife.bind(this);
-
+        //container for toolbar
+        toolbarContainer = (CardView) findViewById(R.id.map_toolbar_container);
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         // Find our drawer view
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerToggle = setupDrawerToggle();
@@ -114,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements
 
         adapter = new HomeViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
+        //show and hide toolbar
+        viewPager.addOnPageChangeListener(toolbarListener);
         tab.setupWithViewPager(viewPager);
 
         // Create a new global location parameters object
@@ -216,6 +223,30 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(intent);
     }
 
+    //Listener for showing / hiding fab
+    ViewPager.OnPageChangeListener toolbarListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            switch (position) {
+                case 0:
+                    toolbarContainer.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    toolbarContainer.setVisibility(View.INVISIBLE);
+                    break;
+            }
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    };
     /*
  * Called when the Activity is no longer visible at all. Stop updates and disconnect.
  */
@@ -243,9 +274,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /*
- * Called by Location Services when the request to connect the client finishes successfully. At
- * this point, you can request the current location or start periodic updates
- */
+     * Called by Location Services when the request to connect the client finishes successfully. At
+     * this point, you can request the current location or start periodic updates
+     */
     public void onConnected(Bundle bundle) {
         Log.d("MainActivity", "Connected to location services");
         currentLocation = getLocation();
