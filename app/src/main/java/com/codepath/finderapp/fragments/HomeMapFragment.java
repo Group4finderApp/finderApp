@@ -9,10 +9,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -21,6 +19,7 @@ import android.widget.TextView;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.PinAdapter;
 import com.codepath.finderapp.common.Constants;
+import com.codepath.finderapp.models.PicturePost;
 import com.codepath.finderapp.models.Pin;
 import com.codepath.finderapp.utils.AppUtils;
 import com.codepath.finderapp.utils.MapUtils;
@@ -37,6 +36,10 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.ui.IconGenerator;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -46,20 +49,19 @@ import java.util.Random;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
-import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 /**
  * Created by hison7463 on 11/12/16.
  */
 
-public class HomeMapView extends Fragment implements OnMapReadyCallback,
+public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleMap.CancelableCallback,
         GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnInfoWindowClickListener {
 
-    private static final String TAG = HomeMapView.class.getSimpleName();
+    private static final String TAG = HomeMapFragment.class.getSimpleName();
 
     private SupportMapFragment mapFragment;
     private GoogleMap map;
@@ -253,5 +255,11 @@ public class HomeMapView extends Fragment implements OnMapReadyCallback,
             }
         }
         return null;
+    }
+
+    public void addMarker(PicturePost post) {
+        BitmapDescriptor icon = MapUtils.createBubble(getActivity(), IconGenerator.STYLE_BLUE, "title");
+        Marker marker = MapUtils.addMarker(map, new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude()), "", "", icon);
+        MapUtils.dropPinEffect(marker);
     }
 }

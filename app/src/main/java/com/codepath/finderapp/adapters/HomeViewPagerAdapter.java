@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.codepath.finderapp.fragments.CameraFragment;
-import com.codepath.finderapp.fragments.HomeMapView;
+import com.codepath.finderapp.fragments.HomeMapFragment;
 
 /**
  * Created by hison7463 on 11/14/16.
@@ -24,7 +24,7 @@ public class HomeViewPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0: {
-                return new HomeMapView();
+                return new HomeMapFragment();
             }
             case 1: {
                 return new CameraFragment();

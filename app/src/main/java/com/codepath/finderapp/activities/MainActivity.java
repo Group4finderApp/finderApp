@@ -12,7 +12,7 @@ import android.view.MenuItem;
 import com.codepath.finderapp.DispatchActivity;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.HomeViewPagerAdapter;
-import com.codepath.finderapp.fragments.HomeMapView;
+import com.codepath.finderapp.fragments.HomeMapFragment;
 import com.codepath.finderapp.fragments.SaveCaptionFragment;
 import com.codepath.finderapp.models.PicturePost;
 import com.crashlytics.android.Crashlytics;
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements
 
     public void onSaveCaption() {
 
-        HomeMapView mapView = (HomeMapView) getSupportFragmentManager()
+        HomeMapFragment mapView = (HomeMapFragment) getSupportFragmentManager()
                 .findFragmentByTag("android:switcher:" + viewPager + ":" +
                         "0");
         Fragment currentView = getSupportFragmentManager()
@@ -95,10 +95,11 @@ public class MainActivity extends AppCompatActivity implements
                         viewPager.getCurrentItem());
 
         //if (currentView != null) {
-            //if (!(currentView instanceof HomeMapView)) {
+            //if (!(currentView instanceof HomeMapFragment)) {
                 viewPager.setCurrentItem(0);
             //}
         //}
+        mapView.addMarker(post);
     }
 }
 
