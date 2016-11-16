@@ -133,10 +133,10 @@ public class CameraFragment extends Fragment {
 
         // Override Android default landscape orientation and save portrait
         Matrix matrix = new Matrix();
-        matrix.postRotate(270);
+        matrix.postRotate(90);
         Bitmap rotatedScaledMealImage = Bitmap.createBitmap(mealImageScaled, 0,
                 0, mealImageScaled.getWidth(), mealImageScaled.getHeight(),
-                matrix, true);
+                matrix, false);
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         rotatedScaledMealImage.compress(Bitmap.CompressFormat.JPEG, 100, bos);
@@ -190,5 +190,16 @@ public class CameraFragment extends Fragment {
             camera.release();
         }*/
         super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        camera.release();
     }
 }

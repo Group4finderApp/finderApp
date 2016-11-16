@@ -13,9 +13,12 @@ import com.parse.interceptors.ParseLogInterceptor;
  */
 public class finderAppApplication extends Application {
 
+    private static Application application;
+
     @Override
     public void onCreate() {
         super.onCreate();
+        application = this;
 
         // set applicationId, and server server based on the values in the Heroku settings.
         // clientKey is not needed unless explicitly configured
@@ -31,6 +34,7 @@ public class finderAppApplication extends Application {
         ParseFacebookUtils.initialize(this);
     }
 
-
-
+    public static Application getApplication() {
+        return application;
+    }
 }
