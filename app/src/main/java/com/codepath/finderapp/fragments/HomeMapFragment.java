@@ -9,10 +9,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -21,6 +19,8 @@ import android.widget.TextView;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.PinAdapter;
 import com.codepath.finderapp.common.Constants;
+import com.codepath.finderapp.finderAppApplication;
+import com.codepath.finderapp.models.PicturePost;
 import com.codepath.finderapp.models.Pin;
 import com.codepath.finderapp.utils.AppUtils;
 import com.codepath.finderapp.utils.MapUtils;
@@ -37,6 +37,11 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.maps.android.ui.IconGenerator;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -46,25 +51,24 @@ import java.util.Random;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
-import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 /**
  * Created by hison7463 on 11/12/16.
  */
 
-public class HomeMapView extends Fragment implements OnMapReadyCallback,
+public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleMap.CancelableCallback,
         GoogleMap.OnMyLocationButtonClickListener,
         GoogleMap.OnInfoWindowClickListener {
 
-    private static final String TAG = HomeMapView.class.getSimpleName();
+    private static final String TAG = HomeMapFragment.class.getSimpleName();
 
     private SupportMapFragment mapFragment;
-    private GoogleMap map;
+    public static GoogleMap map;
     private GoogleApiClient googleApiClient;
-    private Location lastLocation;
+    public static Location lastLocation;
 
     @BindView(R.id.home_map_wrapper)
     MapWrapperLayout wrapperLayout;
@@ -74,7 +78,7 @@ public class HomeMapView extends Fragment implements OnMapReadyCallback,
     private ImageView userProfile;
     private ImageView image;
     private TextView caption;
-    private List<Pin> pinList = new ArrayList<>();
+    private static List<PicturePost> pinList = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,12 +114,14 @@ public class HomeMapView extends Fragment implements OnMapReadyCallback,
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG, "connect");
         googleApiClient.connect();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        Log.d(TAG, "disconnect");
         googleApiClient.disconnect();
     }
 
@@ -134,17 +140,21 @@ public class HomeMapView extends Fragment implements OnMapReadyCallback,
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {
-                Pin pin = findMatchedPin(marker.getPosition().latitude, marker.getPosition().longitude);
-                Picasso.with(getActivity()).load(pin.getImage()).fit().centerCrop().into(image);
-                Picasso.with(getActivity()).load(pin.getProfile()).transform(new CropCircleTransformation()).into(userProfile);
-                if(pin.isThumbUp()) {
-                    thumbDown.setImageResource(R.drawable.thumb_up);
+                PicturePost pin = findMatchedPin(marker.getPosition().latitude, marker.getPosition().longitude);
+                try {
+                    Picasso.with(getActivity()).load(pin.getImage().getFile()).fit().centerCrop().into(image);
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-                else {
-                    thumbDown.setImageResource(R.drawable.thumb_down);
-                }
-                Log.d(TAG, pin.isThumbUp() + "");
-                caption.setText(pin.getCaption());
+//                Picasso.with(getActivity()).load(pin.getProfile()).transform(new CropCircleTransformation()).into(userProfile);
+//                if(pin.isThumbUp()) {
+//                    thumbDown.setImageResource(R.drawable.thumb_up);
+//                }
+//                else {
+//                    thumbDown.setImageResource(R.drawable.thumb_down);
+//                }
+//                Log.d(TAG, pin.isThumbUp() + "");
+                caption.setText(pin.getText());
                 marker.showInfoWindow();
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -171,37 +181,46 @@ public class HomeMapView extends Fragment implements OnMapReadyCallback,
     private void getKNearestPins(int k) {
         //TODO call back-end service
         //fake data
-        if(map != null) {
-            map.clear();
-            for(int i = 0; i < 5; i++) {
-                Pin pin = pinList.get(i);
-                BitmapDescriptor icon = MapUtils.createBubble(getActivity(), IconGenerator.STYLE_BLUE, "title");
-                Marker marker = MapUtils.addMarker(map, new LatLng(pin.getLatitude(), pin.getLongitude()), "test", "test", icon);
-                MapUtils.dropPinEffect(marker);
+//        if(map != null) {
+//            map.clear();
+//            for(int i = 0; i < 5; i++) {
+//                Pin pin = pinList.get(i);
+//                BitmapDescriptor icon = MapUtils.createBubble(getActivity(), IconGenerator.STYLE_BLUE, "title");
+//                Marker marker = MapUtils.addMarker(map, new LatLng(pin.getLatitude(), pin.getLongitude()), "test", "test", icon);
+//                MapUtils.dropPinEffect(marker);
+//            }
+//        }
+        ParseGeoPoint currentLoc = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
+        ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
+        query.whereNear("location", currentLoc);
+        query.setLimit(k);
+        query.findInBackground(new FindCallback<PicturePost>() {
+            @Override
+            public void done(List<PicturePost> objects, ParseException e) {
+                pinList.clear();
+                pinList = objects;
+                Log.d(TAG, objects.size() + "");
+                if(map != null) {
+                    map.clear();
+                    for(PicturePost post : pinList) {
+                        Log.d(TAG, "inside loop");
+                        BitmapDescriptor icon = MapUtils.createBubble(getActivity(), IconGenerator.STYLE_BLUE, "pin");
+                        Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+                        MapUtils.dropPinEffect(marker);
+                    }
+                }
             }
-        }
+        });
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        Log.d(TAG, "connected");
         checkPermission();
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         moveCamera(lastLocation);
-
-        //TODO test data, to be deleted
-        Random random = new Random();
-        for (int i = 0; i < 5; i++) {
-            Pin pin = new Pin();
-            pin.setLatitude(lastLocation.getLatitude() - random.nextFloat() / 10);
-            pin.setLongitude(lastLocation.getLongitude() - random.nextFloat() / 10);
-            pin.setCaption("this is caption for image " + i);
-            pin.setProfile("https://s3-us-west-1.amazonaws.com/appfinder123/0x0ss-85.jpg");
-            pin.setImage("https://s3-us-west-1.amazonaws.com/appfinder123/" + (i + 1) + ".jpg");
-            pin.setThumbUp(random.nextBoolean());
-            pinList.add(pin);
-        }
         //TODO test
-//        getKNearestPins(1);
+        getKNearestPins(5);
     }
 
     @Override
@@ -225,7 +244,6 @@ public class HomeMapView extends Fragment implements OnMapReadyCallback,
     @Override
     public void onFinish() {
         Log.d(TAG, "finish");
-        getKNearestPins(1);
     }
 
     @Override
@@ -245,13 +263,27 @@ public class HomeMapView extends Fragment implements OnMapReadyCallback,
         Log.d(TAG, "info window");
     }
 
-    private Pin findMatchedPin(double latitude, double longitude) {
+    private PicturePost findMatchedPin(double latitude, double longitude) {
         for(int i = 0; i < pinList.size(); i++) {
-            Pin pin = pinList.get(i);
-            if(pin.getLatitude() == latitude && pin.getLongitude() == longitude) {
-                return pin;
+            PicturePost post = pinList.get(i);
+            if(post.getLocation().getLatitude() == latitude && post.getLocation().getLongitude() == longitude) {
+                return post;
             }
         }
         return null;
+    }
+
+    public List<PicturePost> getPinList() {
+        return pinList;
+    }
+
+    public void addMarker(PicturePost post) {
+        if(lastLocation == null) {
+            return;
+        }
+        pinList.add(post);
+        BitmapDescriptor icon = MapUtils.createBubble(finderAppApplication.getApplication().getApplicationContext(), IconGenerator.STYLE_BLUE, "title");
+        Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+        MapUtils.dropPinEffect(marker);
     }
 }

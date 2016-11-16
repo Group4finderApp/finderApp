@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import com.codepath.finderapp.DispatchActivity;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.HomeViewPagerAdapter;
+import com.codepath.finderapp.fragments.HomeMapFragment;
 import com.codepath.finderapp.common.Constants;
 import com.codepath.finderapp.fragments.SaveCaptionFragment;
 import com.codepath.finderapp.models.PicturePost;
@@ -313,6 +315,8 @@ public class MainActivity extends AppCompatActivity implements
     public void onSaveCaption() {
 
         viewPager.setCurrentItem(0);
+        HomeMapFragment mapView = (HomeMapFragment) adapter.getItem(0);
+        mapView.addMarker(post);
 
     }
 
