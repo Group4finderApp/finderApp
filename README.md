@@ -8,15 +8,15 @@ Time spent: **X** hours spent in total
 
 The following **required** functionality is completed:
 
-* [ ] User can login with facebook
-* [ ] User can view a map view of their current location with points visited by their friends marked.
-* [ ] On clicking on these points, user should be able to see a detail view of the picture taken.
-* [ ] User can switch tabs to access the camera and take a picture
-  * [ ] They can caption the picture and thumbs up or down.
-  * [ ] The app should save the picture to the db with the location
+* [x] User can login with facebook
+* [x] User can view a map view of their current location with points visited by their friends marked.
+* [x] On clicking on these points, user should be able to see a detail view of the picture taken.
+* [x] User can switch tabs to access the camera and take a picture
+  * [x] They can caption the picture and thumbs up or down.
+  * [x] The app should save the picture to the db with the location
   * [ ] If multiple pictures are taken in a time period (still to decide), app should be able to club together (sense of a trip)
-* [ ] User can view his profile from the action bar, which should bring up a navigation bar.
-  * [ ] User can also swipe left to bring up the same
+* [x] User can view his profile from the action bar, which should bring up a navigation bar.
+  * [x] User can also swipe left to bring up the same
 * [ ] The profile view should include his trips taken
 
 The following **optional** features are implemented:
