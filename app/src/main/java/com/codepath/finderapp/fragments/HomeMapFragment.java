@@ -2,6 +2,8 @@ package com.codepath.finderapp.fragments;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,12 +11,14 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.PinAdapter;
@@ -36,6 +40,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -44,6 +49,7 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -178,7 +184,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
-    private void getKNearestPins(int k) {
+    private void getKNearestPins(double Latitude, double Longitude, int k) {
         //TODO call back-end service
         //fake data
 //        if(map != null) {
@@ -190,7 +196,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 //                MapUtils.dropPinEffect(marker);
 //            }
 //        }
-        ParseGeoPoint currentLoc = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
+        ParseGeoPoint currentLoc = new ParseGeoPoint(Latitude, Longitude);
         ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
         query.whereNear("location", currentLoc);
         query.setLimit(k);
@@ -201,7 +207,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                 pinList = objects;
                 Log.d(TAG, objects.size() + "");
                 if(map != null) {
-                    map.clear();
+                    //map.clear();
                     for(PicturePost post : pinList) {
                         Log.d(TAG, "inside loop");
                         BitmapDescriptor icon = MapUtils.createBubble(getActivity(), IconGenerator.STYLE_BLUE, "pin");
@@ -220,7 +226,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         moveCamera(lastLocation);
         //TODO test
-        getKNearestPins(5);
+        getKNearestPins(lastLocation.getLatitude(), lastLocation.getLongitude(), 5);
     }
 
     @Override
@@ -233,12 +239,40 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 
     }
 
+    private void updateCameraLocation (LatLng latlng) {
+        map.clear();
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latlng, 10);
+        map.animateCamera(update, this);
+        getKNearestPins(latlng.latitude, latlng.longitude, 5);
+    }
+
     private void moveCamera(Location location) {
         if(location == null) {
             return;
         }
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 10);
-        map.animateCamera(update, this);
+        updateCameraLocation(new LatLng(location.getLatitude(), location.getLongitude()));
+    }
+
+    public void moveToSearchLocation(String searchString) throws IOException {
+        List<Address> searchAddresses = null;
+        if (searchString != null && !TextUtils.isEmpty(searchString)) {
+            Geocoder geocoder = new Geocoder(this.getActivity());
+            try {
+                searchAddresses = geocoder.getFromLocationName(searchString, 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (searchAddresses != null && searchAddresses.size() > 0) {
+                LatLng latlng = new LatLng(searchAddresses.get(0).getLatitude(),
+                        searchAddresses.get(0).getLongitude());
+                updateCameraLocation(latlng);
+                map.addMarker(new MarkerOptions().position(latlng).title("searchLoc"));
+            } else {
+                Toast.makeText(getActivity(), "Oops, something went wrong!!",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override

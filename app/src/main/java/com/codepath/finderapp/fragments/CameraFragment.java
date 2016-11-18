@@ -52,7 +52,7 @@ public class CameraFragment extends Fragment {
                 Log.e(TAG, "No camera with exception: " + e.getMessage());
                 photoButton.setEnabled(false);
                 Toast.makeText(getActivity(), "No camera detected",
-                        Toast.LENGTH_LONG).show();
+                        Toast.LENGTH_SHORT).show();
             }
         }
 

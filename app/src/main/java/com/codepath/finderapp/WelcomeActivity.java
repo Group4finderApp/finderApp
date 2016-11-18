@@ -103,7 +103,7 @@ public class WelcomeActivity extends Activity {
     }
 
     public void SendInvite() {
-        String appLinkUrl = "https://www.codepath.com";
+        String appLinkUrl =  "https://fb.me/161679120966718";
         String previewImageUrl = "https://i.imgur.com/XgxWfyF.png";
         if (AppInviteDialog.canShow()) {
             AppInviteContent content = new AppInviteContent.Builder()
