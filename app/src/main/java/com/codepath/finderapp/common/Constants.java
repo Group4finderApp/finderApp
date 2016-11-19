@@ -7,5 +7,6 @@ package com.codepath.finderapp.common;
 public class Constants {
 
     public static int locationPermission = 1;
+    public static int cameraPermission = 1;
 
 }
