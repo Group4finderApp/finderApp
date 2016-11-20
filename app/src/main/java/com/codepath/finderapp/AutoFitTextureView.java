@@ -1,4 +1,4 @@
-package com.codepath.finderapp.activities;
+package com.codepath.finderapp;
 
 import android.content.Context;
 import android.util.AttributeSet;

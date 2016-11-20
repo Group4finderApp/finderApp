@@ -43,8 +43,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.codepath.finderapp.AutoFitTextureView;
 import com.codepath.finderapp.R;
-import com.codepath.finderapp.activities.AutoFitTextureView;
+import com.parse.ParseFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -62,6 +63,7 @@ import java.util.concurrent.TimeUnit;
 public class CameraFragment extends Fragment
         implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
+    ParseFile photoFile;
     /**
      * Conversion from screen rotation to JPEG orientation.
      */
@@ -417,6 +419,7 @@ public class CameraFragment extends Fragment
         view.findViewById(R.id.camera_photo_button).setOnClickListener(this);
         // M TODO Removed
         //view.findViewById(R.id.info).setOnClickListener(this);
+
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture_view);
     }
 
@@ -502,8 +505,9 @@ public class CameraFragment extends Fragment
                 Size largest = Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
                         new CompareSizesByArea());
+
                 mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(),
-                        ImageFormat.JPEG, /*maxImages*/2);
+                        ImageFormat.JPEG,    /*maxImages*/2);
                 mImageReader.setOnImageAvailableListener(
                         mOnImageAvailableListener, mBackgroundHandler);
 
@@ -904,7 +908,7 @@ public class CameraFragment extends Fragment
     /**
      * Saves a JPEG {@link Image} into the specified {@link File}.
      */
-    private static class ImageSaver implements Runnable {
+    private class ImageSaver implements Runnable {
 
         /**
          * The JPEG image
@@ -925,6 +929,56 @@ public class CameraFragment extends Fragment
             ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
             byte[] bytes = new byte[buffer.remaining()];
             buffer.get(bytes);
+
+            /*
+            photoFile = new ParseFile("meal_photo.jpg", bytes);
+            photoFile.saveInBackground(new SaveCallback() {
+                public void done(ParseException e) {
+                    if (e != null) {
+                        Toast.makeText(getActivity(),
+                                "Error saving: " + e.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        mImage.close();
+
+                        // show transparent dialog for caption and thumbs Up or down
+                        ((MainActivity) getActivity()).getCurrentPicturePost().setImage(photoFile);
+                        PicturePost post = ((MainActivity) getActivity()).getCurrentPicturePost();
+                        // When the user clicks "Save," upload the post to Parse
+                        // Add data to the post object:
+                        post.setText("Camera 2 trial 1");
+                        Location myLoc = ((MainActivity) getActivity()).getCurrentLocation();
+                        ParseGeoPoint geoPoint = new ParseGeoPoint(myLoc.getLatitude(), myLoc.getLongitude());
+                        // Set the location to the current user's location
+                        post.setLocation(geoPoint);
+                        ParseUser user = ParseUser.getCurrentUser();
+                        post.setUser(user);
+                        ParseACL acl = new ParseACL();
+                        // Give public read access
+                        // TODO: Update ACL
+                        acl.setPublicReadAccess(true);
+                        post.setACL(acl);
+
+                        // Save the post and return
+                        post.saveInBackground(new SaveCallback() {
+
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+
+                                } else {
+                                    Toast.makeText(
+                                            getActivity().getApplicationContext(),
+                                            "Error saving: " + e.getMessage(),
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                        });
+                        //startCaptionFragment();}
+                    }
+                    });
+*/
             FileOutputStream output = null;
             try {
                 output = new FileOutputStream(mFile);

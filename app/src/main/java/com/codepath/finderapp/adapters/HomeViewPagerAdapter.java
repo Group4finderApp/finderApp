@@ -24,11 +24,12 @@ public class HomeViewPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0: {
-                return new CameraFragment();
+                return new HomeMapFragment();
 
             }
             case 1: {
-                return new HomeMapFragment();
+                return new CameraFragment();
+
             }
             default: {
                 return null;
