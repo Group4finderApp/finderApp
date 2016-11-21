@@ -1,44 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/frame_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:textColor="#000000"
-        android:id="@+id/etCaption"
-        android:background="@android:color/transparent"
-        android:maxLength="280"
-        android:layout_marginLeft="10dp"
-        android:hint="@string/compose_hint"
-        android:cursorVisible="false"
-        android:inputType="textNoSuggestions"
-        android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/imageView"
-        />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/save"
-        android:backgroundTint="#1DA1F3"
-        android:textColor="#FFFFFF"
-        android:id="@+id/btnSave"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true" />
-
-    <!--
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/etCaption" /> -->
+        android:id="@+id/bgImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY" />
+
+    <RelativeLayout
+        android:id="@+id/rl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="right"
+            android:backgroundTint="#1DA1F3"
+            android:text="@string/save"
+            android:textColor="#FFFFFF" />
+
+        <EditText
+            android:id="@+id/etCaption"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="112dp"
+            android:background="@android:color/transparent"
+            android:cursorVisible="false"
+            android:hint="@string/compose_hint"
+            android:maxLength="600"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#FFFFFF" />
+
+        <ImageButton
+            android:id="@+id/thumbs_up_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/btnSave"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginRight="10dp"
+            android:layout_toStartOf="@+id/btnSave"
+            android:background="@android:color/transparent"
+            android:src="@drawable/thumb_up_outline_white" />
 
 
-</LinearLayout>
+    </RelativeLayout>
+</FrameLayout>

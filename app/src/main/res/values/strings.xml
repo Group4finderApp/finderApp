@@ -2,7 +2,7 @@
     <string name="app_name">finderApp</string>
     <string name="google_map_api_key">AIzaSyAiWAhUBJuHjU7KVxLI6jDXEVcntKMUQXk</string>
     <string name="compose_hint">Write Caption</string>
-    <string name="save">Save</string>
+    <string name="save">Share</string>
     <string name="login">Log in</string>
     <string name="facebooklogin">Log In with facebook</string>
     <string name="signup">Sign up</string>

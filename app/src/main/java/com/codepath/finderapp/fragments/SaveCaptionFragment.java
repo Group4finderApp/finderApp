@@ -1,5 +1,6 @@
 package com.codepath.finderapp.fragments;
 
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
@@ -10,19 +11,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.activities.MainActivity;
 import com.codepath.finderapp.models.PicturePost;
 import com.parse.ParseACL;
-import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 /**
  * Created by chmanish on 11/13/16.
@@ -30,6 +31,10 @@ import com.parse.SaveCallback;
 public class SaveCaptionFragment extends DialogFragment {
 
     private Button saveButton;
+    private ImageView bgImage;
+    private ImageButton thumbsUpButton;
+    private boolean isThumbsUp = false;
+    static private Bitmap bmBackground;
 
     private TextView caption;
 
@@ -37,13 +42,15 @@ public class SaveCaptionFragment extends DialogFragment {
         // Empty constructor required for DialogFragment
     }
 
-    public static SaveCaptionFragment newInstance() {
+    public static SaveCaptionFragment newInstance(Bitmap image) {
         SaveCaptionFragment frag = new SaveCaptionFragment();
+        bmBackground = image;
         return frag;
     }
 
     // 1. Defines the listener interface with a method passing back data result.
     public interface SaveCaptionFragmentDialogListener {
+
         void onSaveCaption();
     }
 
@@ -55,7 +62,14 @@ public class SaveCaptionFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                              Bundle SavedInstanceState) {
+        //getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         View v = inflater.inflate(R.layout.fragment_save_caption, parent, false);
+
+        bgImage = (ImageView) v.findViewById(R.id.bgImage);
+        bgImage.setImageBitmap(bmBackground);
+        bgImage.setAlpha(0.5f);
 
         caption = ((EditText) v.findViewById(R.id.etCaption));
 
@@ -68,6 +82,7 @@ public class SaveCaptionFragment extends DialogFragment {
                 // When the user clicks "Save," upload the post to Parse
                 // Add data to the post object:
                 post.setText(caption.getText().toString());
+                post.setThumbsUp(String.valueOf(isThumbsUp));
                 Location myLoc = ((MainActivity) getActivity()).getCurrentLocation();
                 ParseGeoPoint geoPoint = new ParseGeoPoint(myLoc.getLatitude(), myLoc.getLongitude());
                 // Set the location to the current user's location
@@ -81,27 +96,27 @@ public class SaveCaptionFragment extends DialogFragment {
                 acl.setPublicReadAccess(true);
                 post.setACL(acl);
 
-                // Save the post and return
-                post.saveInBackground(new SaveCallback() {
+                SaveCaptionFragmentDialogListener mListener = (SaveCaptionFragmentDialogListener) getActivity();
+                mListener.onSaveCaption();
+                dismiss();
 
-                    @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            //android.support.v4.app.FragmentManager fm = getActivity().getSupportFragmentManager();
-                            //fm.popBackStack("CameraFragment",
-                            //        FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                            SaveCaptionFragmentDialogListener mListener = (SaveCaptionFragmentDialogListener) getActivity();
-                            mListener.onSaveCaption();
-                            dismiss();
-                        } else {
-                            Toast.makeText(
-                                    getActivity().getApplicationContext(),
-                                    "Error saving: " + e.getMessage(),
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
+            }
+        });
 
-                });
+        thumbsUpButton = (ImageButton) v.findViewById(R.id.thumbs_up_button);
+        thumbsUpButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (isThumbsUp == true) {
+                    isThumbsUp = false;
+                    thumbsUpButton.setImageResource(R.drawable.thumb_up_outline_white);
+                }
+                else {
+                    isThumbsUp = true;
+                    thumbsUpButton.setImageResource(R.drawable.thumb_up);
+                }
+
 
             }
         });
