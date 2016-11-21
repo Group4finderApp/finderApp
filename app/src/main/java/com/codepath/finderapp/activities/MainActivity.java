@@ -30,7 +30,6 @@ import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.HomeViewPagerAdapter;
 import com.codepath.finderapp.common.Constants;
 import com.codepath.finderapp.fragments.CameraFragment;
-import com.codepath.finderapp.fragments.AlbumActivity;
 import com.codepath.finderapp.fragments.HomeMapFragment;
 import com.codepath.finderapp.fragments.SaveCaptionFragment;
 import com.codepath.finderapp.models.PicturePost;
@@ -250,9 +249,13 @@ public class MainActivity extends AppCompatActivity implements
         //Class fragmentClass = null;
 
         switch (menuItem.getItemId()) {
+            case R.id.photos:
+                //fragmentClass = ImagesActivity.class;
+                startActivity(new Intent(this, ImagesActivity.class));
+                break;
             case R.id.albums:
-                //fragmentClass = AlbumActivity.class;
-                startActivity(new Intent(this, AlbumActivity.class));
+                //fragmentClass = ImagesActivity.class;
+                startActivity(new Intent(this, ImagesActivity.class));
                 break;
             case R.id.logout:
                 onLogout();
