@@ -2,8 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/photos"
+        android:icon="@drawable/ic_photos"
+        android:title="Photos"/>
+
+    <item
+        android:id="@+id/albums"
+        android:icon="@drawable/ic_album"
+        android:title="Albums"/>
+
+    <item
         android:id="@+id/logout"
         android:icon="@drawable/ic_logout"
-        android:title="@string/logout">
-    </item>
+        android:title="@string/logout"/>
+
 </menu>
