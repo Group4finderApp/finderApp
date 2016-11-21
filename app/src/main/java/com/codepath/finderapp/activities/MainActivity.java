@@ -26,11 +26,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.codepath.finderapp.DispatchActivity;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.HomeViewPagerAdapter;
 import com.codepath.finderapp.common.Constants;
 import com.codepath.finderapp.fragments.CameraFragment;
+import com.codepath.finderapp.fragments.AlbumActivity;
 import com.codepath.finderapp.fragments.HomeMapFragment;
 import com.codepath.finderapp.fragments.SaveCaptionFragment;
 import com.codepath.finderapp.models.PicturePost;
@@ -245,14 +245,35 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
+        // Create a new fragment and specify the fragment to show based on nav item clicked
+        //Fragment fragment = null;
+        //Class fragmentClass = null;
+
         switch (menuItem.getItemId()) {
+            case R.id.albums:
+                //fragmentClass = AlbumActivity.class;
+                startActivity(new Intent(this, AlbumActivity.class));
+                break;
             case R.id.logout:
                 onLogout();
                 break;
             default:
                 break;
         }
+/**
+        if (fragment != null) {
+            try {
+                fragment = (Fragment) fragmentClass.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
+            // Insert the fragment by replacing any existing fragment
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+        }
+
+**/
         // Highlight the selected item has been done by NavigationView
         menuItem.setChecked(true);
         // Set action bar title

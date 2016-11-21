@@ -1,4 +1,4 @@
-package com.codepath.finderapp;
+package com.codepath.finderapp.activities;
 
 import android.app.Activity;
 import android.content.Intent;
