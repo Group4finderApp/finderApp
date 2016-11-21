@@ -18,6 +18,10 @@ public class PicturePost extends ParseObject {
             return getString("text");
         }
 
+        public String getThumbsUp() { return getString("thumbsUp"); }
+
+        public void setThumbsUp(String value) { put("thumbsUp", value); }
+
         public void setText(String value) {
             put("text", value);
         }

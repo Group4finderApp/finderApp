@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -30,8 +29,9 @@ import android.widget.Toast;
 import com.codepath.finderapp.DispatchActivity;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.HomeViewPagerAdapter;
-import com.codepath.finderapp.fragments.HomeMapFragment;
 import com.codepath.finderapp.common.Constants;
+import com.codepath.finderapp.fragments.CameraFragment;
+import com.codepath.finderapp.fragments.HomeMapFragment;
 import com.codepath.finderapp.fragments.SaveCaptionFragment;
 import com.codepath.finderapp.models.PicturePost;
 import com.crashlytics.android.Crashlytics;
@@ -42,7 +42,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -54,6 +57,7 @@ import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 
 public class MainActivity extends AppCompatActivity implements
+        CameraFragment.CameraFragmentDialogListener,
         SaveCaptionFragment.SaveCaptionFragmentDialogListener,
         LocationListener,
         GoogleApiClient.ConnectionCallbacks{
@@ -66,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private HomeViewPagerAdapter adapter;
     private PicturePost post;
+    private ParseFile photoFile;
+
     private Location lastLocation;
     private Location currentLocation;
     private DrawerLayout mDrawer;
@@ -126,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements
         post = new PicturePost();
 
         adapter = new HomeViewPagerAdapter(getSupportFragmentManager());
+        //viewPager.setOffscreenPageLimit(1);
         viewPager.setAdapter(adapter);
         //show and hide toolbar
         viewPager.addOnPageChangeListener(toolbarListener);
@@ -352,12 +359,48 @@ public class MainActivity extends AppCompatActivity implements
         return post;
     }
 
+
+    public void createParseFile(byte[] scaledData){
+        photoFile = new ParseFile("post_photo.jpg", scaledData);
+    }
+
     public void onSaveCaption() {
+
+        photoFile.saveInBackground(new SaveCallback() {
+            public void done(ParseException e) {
+                if (e != null) {
+                    Toast.makeText(getApplicationContext(),
+                            "Error saving picture: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+
+                } else {
+                    post.setImage(photoFile);
+                    post.saveInBackground(new SaveCallback() {
+
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+
+                            } else {
+
+                                Toast.makeText(
+                                        getApplicationContext(),
+                                        "Error saving post: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+
+                            }
+                        }
+
+                    });
+
+
+                }
+            }
+        });
 
         viewPager.setCurrentItem(0);
         HomeMapFragment mapView = (HomeMapFragment) adapter.getItem(0);
         mapView.addMarker(post);
-
     }
 
     /*

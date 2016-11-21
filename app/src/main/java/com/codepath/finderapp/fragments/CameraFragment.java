@@ -18,10 +18,6 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.codepath.finderapp.R;
-import com.codepath.finderapp.activities.MainActivity;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -34,26 +30,21 @@ public class CameraFragment extends Fragment {
 
     private Camera camera;
     private SurfaceView surfaceView;
-    private ParseFile photoFile;
     private ImageButton photoButton;
+    private int rotation = 90;
 
+    public interface CameraFragmentDialogListener {
+        void createParseFile(byte[] data);
+
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_camera, parent, false);
-
         photoButton = (ImageButton) v.findViewById(R.id.camera_photo_button);
 
         if (camera == null) {
-            try {
-                camera = Camera.open();
-                photoButton.setEnabled(true);
-            } catch (Exception e) {
-                Log.e(TAG, "No camera with exception: " + e.getMessage());
-                photoButton.setEnabled(false);
-                Toast.makeText(getActivity(), "No camera detected",
-                        Toast.LENGTH_SHORT).show();
-            }
+            setupCamera();
         }
 
         photoButton.setOnClickListener(new View.OnClickListener() {
@@ -88,7 +79,7 @@ public class CameraFragment extends Fragment {
             public void surfaceCreated(SurfaceHolder holder) {
                 try {
                     if (camera != null) {
-                        camera.setDisplayOrientation(90);
+                        camera.setDisplayOrientation(rotation);
                         camera.setPreviewDisplay(holder);
                         camera.startPreview();
                     }
@@ -111,10 +102,27 @@ public class CameraFragment extends Fragment {
         return v;
     }
 
-    private void startCaptionFragment() {
+    private void setupCamera(){
+        try {
+            camera = Camera.open();
+            //set camera to continually auto-focus
+            Camera.Parameters params = camera.getParameters();
+            params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            camera.setParameters(params);
+            photoButton.setEnabled(true);
+        } catch (Exception e) {
+            Log.e(TAG, "No camera with exception: " + e.getMessage());
+            photoButton.setEnabled(false);
+            Toast.makeText(getActivity(), "No camera detected",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void startCaptionFragment(Bitmap rotatedScaledMealImage) {
 
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        SaveCaptionFragment saveCaptionFragment = SaveCaptionFragment.newInstance();
+        SaveCaptionFragment saveCaptionFragment = SaveCaptionFragment.newInstance(rotatedScaledMealImage);
         saveCaptionFragment.show(fm, "fragment_save_caption");
 
     }
@@ -128,12 +136,12 @@ public class CameraFragment extends Fragment {
 
         // Resize photo from camera byte array
         Bitmap mealImage = BitmapFactory.decodeByteArray(data, 0, data.length);
-        Bitmap mealImageScaled = Bitmap.createScaledBitmap(mealImage, 200, 200
+        Bitmap mealImageScaled = Bitmap.createScaledBitmap(mealImage, 960, 960
                 * mealImage.getHeight() / mealImage.getWidth(), false);
 
         // Override Android default landscape orientation and save portrait
         Matrix matrix = new Matrix();
-        matrix.postRotate(90);
+        matrix.postRotate(rotation);
         Bitmap rotatedScaledMealImage = Bitmap.createBitmap(mealImageScaled, 0,
                 0, mealImageScaled.getWidth(), mealImageScaled.getHeight(),
                 matrix, false);
@@ -144,51 +152,30 @@ public class CameraFragment extends Fragment {
         byte[] scaledData = bos.toByteArray();
 
         // Save the scaled image to Parse
-        photoFile = new ParseFile("meal_photo.jpg", scaledData);
-        photoFile.saveInBackground(new SaveCallback() {
-            public void done(ParseException e) {
-                if (e != null) {
-                    Toast.makeText(getActivity(),
-                            "Error saving: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
-                } else {
-                    // show transparent dialog for caption and thumbs Up or down
-                    ((MainActivity) getActivity()).getCurrentPicturePost().setImage(photoFile);
-                    if (camera != null) {
-                        camera.startPreview();
-                        //camera.release();
-                    }
-                    startCaptionFragment();
-                }
-            }
-        });
+        CameraFragmentDialogListener mListener = (CameraFragmentDialogListener) getActivity();
+        mListener.createParseFile(scaledData);
+
+        startCaptionFragment(rotatedScaledMealImage);
+        if (camera != null)
+            camera.startPreview();
 
 
     }
+
 
     @Override
     public void onResume() {
         super.onResume();
         if (camera == null) {
-            try {
-                camera = Camera.open();
-                photoButton.setEnabled(true);
-            } catch (Exception e) {
-                Log.i(TAG, "No camera: " + e.getMessage());
-                photoButton.setEnabled(false);
-                Toast.makeText(getActivity(), "No camera detected",
-                        Toast.LENGTH_LONG).show();
-            }
+            setupCamera();
         }
-
     }
 
     @Override
     public void onPause() {
-        /*if (camera != null) {
+        if (camera != null) {
             camera.stopPreview();
-            camera.release();
-        }*/
+        }
         super.onPause();
     }
 
