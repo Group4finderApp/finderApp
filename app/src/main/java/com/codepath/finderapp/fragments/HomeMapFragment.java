@@ -212,11 +212,11 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                 LatLngBounds lastBound = bounds;
                 bounds = map.getProjection().getVisibleRegion().latLngBounds;
                 //TODO
-                if(Math.abs(map.getCameraPosition().zoom - zoomLevel) <= ZOOM_LEVEL_THREHOLD) {
-                    return;
-                }
-                zoomLevel = map.getCameraPosition().zoom;
-                fetchDataAfterZoom(bounds, 5);
+//                if(Math.abs(map.getCameraPosition().zoom - zoomLevel) <= ZOOM_LEVEL_THREHOLD) {
+//                    return;
+//                }
+//                zoomLevel = map.getCameraPosition().zoom;
+                fetchDataAfterZoom(bounds, 10);
             }
         });
 //        map.setOnInfoWindowClickListener(this);
