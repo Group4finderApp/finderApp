@@ -7,6 +7,8 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.Arrays;
+
 /**
  * Data model for a post.
  */
@@ -49,5 +51,26 @@ public class PicturePost extends ParseObject {
         public static ParseQuery<PicturePost> getQuery() {
             return ParseQuery.getQuery(PicturePost.class);
         }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(new double[]{this.getLocation().getLatitude(), this.getLocation().getLongitude()});
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(other == null) {
+            return false;
+        }
+        if(this == other) {
+            return true;
+        }
+        if(!(other instanceof PicturePost)) {
+            return false;
+        }
+        PicturePost post = (PicturePost) other;
+        return post.getLocation().getLatitude() == this.getLocation().getLatitude()
+                && post.getLocation().getLongitude() == this.getLocation().getLongitude();
+    }
 }
 
