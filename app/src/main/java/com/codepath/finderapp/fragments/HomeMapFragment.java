@@ -38,6 +38,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
@@ -67,10 +68,20 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 
     private static final String TAG = HomeMapFragment.class.getSimpleName();
 
+    private static final int MILLISECONDS_PER_SECOND = 1000;
+    private static final int UPDATE_INTERVAL = 5;
+    private static final int FAST_CEILING_IN_SECONDS = 1;
+    private static final int UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL * MILLISECONDS_PER_SECOND;
+    private static final int FAST_CEILING_IN_MILLISECONDS = FAST_CEILING_IN_SECONDS * MILLISECONDS_PER_SECOND;
+    private static final double FETCH_DATA_THREHOLD = 0.1;
+    private static final double ZOOM_LEVEL_THREHOLD = 0.6;
+
     private SupportMapFragment mapFragment;
     public static GoogleMap map;
     private GoogleApiClient googleApiClient;
     public static Location lastLocation;
+    private LatLngBounds bounds;
+    private double zoomLevel = 15;
 
     @BindView(R.id.home_map_wrapper)
     MapWrapperLayout wrapperLayout;
@@ -168,7 +179,52 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                 return false;
             }
         });
+
+        map.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+
+            @Override
+            public void onCameraIdle() {
+                Log.d(TAG, "camera update");
+                Log.d(TAG, "camera zoom: " + map.getCameraPosition().zoom);
+                Log.d(TAG, "zoom level: " + zoomLevel);
+                LatLngBounds lastBound = bounds;
+                bounds = map.getProjection().getVisibleRegion().latLngBounds;
+                //TODO
+                if(Math.abs(map.getCameraPosition().zoom - zoomLevel) <= ZOOM_LEVEL_THREHOLD) {
+                    return;
+                }
+                zoomLevel = map.getCameraPosition().zoom;
+                fetchDataAfterZoom(bounds, 5);
+            }
+        });
 //        map.setOnInfoWindowClickListener(this);
+    }
+
+    private void fetchDataAfterZoom(LatLngBounds bounds, int k) {
+        ParseGeoPoint northEast = new ParseGeoPoint(bounds.northeast.latitude, bounds.northeast.longitude);
+        ParseGeoPoint southWest = new ParseGeoPoint(bounds.southwest.latitude, bounds.southwest.longitude);
+        ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
+        query.whereWithinGeoBox("location", southWest, northEast);
+        if(k != -1) {
+            query.setLimit(k);
+        }
+        query.findInBackground(new FindCallback<PicturePost>() {
+            @Override
+            public void done(List<PicturePost> objects, ParseException e) {
+                if(e != null) {
+                    Toast.makeText(getActivity(), "server error", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                map.clear();
+                pinList.clear();
+                pinList.addAll(objects);
+                for(PicturePost post : pinList) {
+                    BitmapDescriptor icon = MapUtils.createBubble(getActivity(), IconGenerator.STYLE_BLUE, "zoomPin");
+                    Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+                    MapUtils.dropPinEffect(marker);
+                }
+            }
+        });
     }
 
     private void checkPermission() {
@@ -241,7 +297,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 
     private void updateCameraLocation (LatLng latlng) {
         map.clear();
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latlng, 10);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latlng, 15);
         map.animateCamera(update, this);
         getKNearestPins(latlng.latitude, latlng.longitude, 5);
     }
@@ -319,5 +375,6 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         BitmapDescriptor icon = MapUtils.createBubble(finderAppApplication.getApplication().getApplicationContext(), IconGenerator.STYLE_BLUE, "title");
         Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
         MapUtils.dropPinEffect(marker);
+        moveCamera(lastLocation);
     }
 }
