@@ -1,4 +1,4 @@
-package com.codepath.finderapp;
+package com.codepath.finderapp.activities;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.codepath.finderapp.activities.MainActivity;
+import com.codepath.finderapp.R;
 import com.codepath.finderapp.network.FacebookGraphClient;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;

@@ -25,7 +25,6 @@ import com.codepath.finderapp.adapters.PinAdapter;
 import com.codepath.finderapp.common.Constants;
 import com.codepath.finderapp.finderAppApplication;
 import com.codepath.finderapp.models.PicturePost;
-import com.codepath.finderapp.models.Pin;
 import com.codepath.finderapp.utils.AppUtils;
 import com.codepath.finderapp.utils.MapUtils;
 import com.codepath.finderapp.widgets.MapWrapperLayout;
@@ -43,7 +42,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
@@ -52,11 +50,9 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 /**
  * Created by hison7463 on 11/12/16.
@@ -224,9 +220,13 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         Log.d(TAG, "connected");
         checkPermission();
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-        moveCamera(lastLocation);
-        //TODO test
-        getKNearestPins(lastLocation.getLatitude(), lastLocation.getLongitude(), 5);
+        if (lastLocation != null) {
+            moveCamera(lastLocation);
+            //TODO test
+            getKNearestPins(lastLocation.getLatitude(), lastLocation.getLongitude(), 5);
+        } else {
+            Toast.makeText(getActivity(), "Location not found", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

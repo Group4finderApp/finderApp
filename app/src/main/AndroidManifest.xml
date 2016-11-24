@@ -72,7 +72,7 @@
         </receiver>
 
         <activity
-            android:name=".DispatchActivity"
+            android:name=".activities.DispatchActivity"
             android:noHistory="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -97,7 +97,11 @@
             android:label="@string/app_name" />
 
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".activities.ImagesActivity"
+            android:theme="@style/AppThemeActionBar"
+            android:label="@string/app_name" />
+        <activity
+            android:name=".activities.WelcomeActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo" />
