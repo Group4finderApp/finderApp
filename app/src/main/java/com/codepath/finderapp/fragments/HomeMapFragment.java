@@ -150,6 +150,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         if(googleApiClient.isConnected()) {
             stopPeriodUpdates();
         }
+        pinList.clear();
     }
 
     @Override
@@ -401,15 +402,21 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
             return;
         }
         pinList.add(post);
+        moveCamera(lastLocation);
         BitmapDescriptor icon = MapUtils.createBubble(finderAppApplication.getApplication().getApplicationContext(), IconGenerator.STYLE_BLUE, "title");
         Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
         MapUtils.dropPinEffect(marker);
-        moveCamera(lastLocation);
     }
 
     @Override
     public void onLocationChanged(Location location) {
         Log.d(TAG, "location period update");
         lastLocation = location;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause");
     }
 }

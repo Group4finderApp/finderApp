@@ -187,6 +187,5 @@ public class CameraFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        camera.release();
     }
 }
