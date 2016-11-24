@@ -79,7 +79,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     private static final int UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL * MILLISECONDS_PER_SECOND;
     private static final int FAST_CEILING_IN_MILLISECONDS = FAST_CEILING_IN_SECONDS * MILLISECONDS_PER_SECOND;
     private static final double FETCH_DATA_THREHOLD = 0.1;
-    private static final double ZOOM_LEVEL_THREHOLD = 0.6;
+    private static final double ZOOM_LEVEL_THREHOLD = 0.2;
 
     private SupportMapFragment mapFragment;
     public static GoogleMap map;
@@ -88,6 +88,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     private LatLngBounds bounds;
     private double zoomLevel = 15;
     private LocationRequest locationRequest;
+    private Marker currentMarker;
 
     @BindView(R.id.home_map_wrapper)
     MapWrapperLayout wrapperLayout;
@@ -168,6 +169,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {
+                currentMarker = marker;
                 PicturePost pin = findMatchedPin(marker.getPosition().latitude, marker.getPosition().longitude);
                 try {
                     Picasso.with(getActivity()).load(pin.getImage().getFile()).fit().centerCrop().into(image);
@@ -211,13 +213,18 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                 Log.d(TAG, "camera zoom: " + map.getCameraPosition().zoom);
                 Log.d(TAG, "zoom level: " + zoomLevel);
                 LatLngBounds lastBound = bounds;
+
                 bounds = map.getProjection().getVisibleRegion().latLngBounds;
-                //TODO
-//                if(Math.abs(map.getCameraPosition().zoom - zoomLevel) <= ZOOM_LEVEL_THREHOLD) {
-//                    return;
-//                }
-//                zoomLevel = map.getCameraPosition().zoom;
                 fetchDataAfterZoom(bounds, 10);
+
+                if(Math.abs(map.getCameraPosition().zoom - zoomLevel) <= ZOOM_LEVEL_THREHOLD) {
+                    return;
+                }
+                zoomLevel = map.getCameraPosition().zoom;
+
+                if(currentMarker != null && currentMarker.isInfoWindowShown()) {
+                    currentMarker.hideInfoWindow();
+                }
             }
         });
 //        map.setOnInfoWindowClickListener(this);
@@ -327,7 +334,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void updateCameraLocation (LatLng latlng) {
-        map.clear();
+//        map.clear();
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latlng, 15);
         map.animateCamera(update, this);
 //        getKNearestPins(latlng.latitude, latlng.longitude, 5);
