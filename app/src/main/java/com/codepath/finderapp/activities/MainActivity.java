@@ -30,7 +30,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.codepath.finderapp.DispatchActivity;
 import com.codepath.finderapp.MyCustomReceiver;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.HomeViewPagerAdapter;
