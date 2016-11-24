@@ -15,4 +15,5 @@
     <string name="skip">skip</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="gcm_sender_id">id:982232860218</string>
 </resources>

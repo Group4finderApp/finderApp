@@ -1,7 +1,10 @@
 package com.codepath.finderapp.activities;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Location;
@@ -9,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -26,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codepath.finderapp.activities.DispatchActivity;
+import com.codepath.finderapp.MyCustomReceiver;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.HomeViewPagerAdapter;
 import com.codepath.finderapp.common.Constants;
@@ -41,6 +47,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
@@ -48,6 +55,7 @@ import com.parse.SaveCallback;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -404,6 +412,11 @@ public class MainActivity extends AppCompatActivity implements
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
+                                // Push notifications
+                                HashMap<String, String> test = new HashMap<>();
+                                test.put("message", "testing");
+                                test.put("customData", post.getUser().getUsername());
+                                ParseCloud.callFunctionInBackground("pushChannelTest", test);
 
                             } else {
 
@@ -421,6 +434,8 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         });
+
+
 
         viewPager.setCurrentItem(0);
         HomeMapFragment mapView = (HomeMapFragment) adapter.getItem(0);
@@ -485,6 +500,27 @@ public class MainActivity extends AppCompatActivity implements
                 requestPermissions(perms, Constants.locationPermission);
             }
         }
+    }
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(getApplicationContext(), "onReceive invoked!", Toast.LENGTH_LONG).show();
+        }
+    };
+
+    public void onPause() {
+        super.onPause();
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, new IntentFilter(MyCustomReceiver.intentAction));
     }
 }
 
