@@ -212,7 +212,6 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                 Log.d(TAG, "camera update");
                 Log.d(TAG, "camera zoom: " + map.getCameraPosition().zoom);
                 Log.d(TAG, "zoom level: " + zoomLevel);
-                LatLngBounds lastBound = bounds;
 
                 bounds = map.getProjection().getVisibleRegion().latLngBounds;
                 fetchDataAfterZoom(bounds, 10);
@@ -413,6 +412,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         BitmapDescriptor icon = MapUtils.createBubble(finderAppApplication.getApplication().getApplicationContext(), IconGenerator.STYLE_BLUE, "title");
         Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
         MapUtils.dropPinEffect(marker);
+        moveCamera(lastLocation);
     }
 
     @Override
