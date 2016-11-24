@@ -1,5 +1,6 @@
 package com.codepath.finderapp.fragments;
 
+import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.location.Location;
@@ -55,21 +56,33 @@ public class SaveCaptionFragment extends DialogFragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        Dialog d = getDialog();
+        if (d!=null){
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = ViewGroup.LayoutParams.MATCH_PARENT;
+            d.getWindow().setLayout(width, height);
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.SaveFragment);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                              Bundle SavedInstanceState) {
-        //getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
+        //getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         View v = inflater.inflate(R.layout.fragment_save_caption, parent, false);
 
         bgImage = (ImageView) v.findViewById(R.id.bgImage);
         bgImage.setImageBitmap(bmBackground);
-        bgImage.setAlpha(0.5f);
+        bgImage.setAlpha(0.8f);
 
         caption = ((EditText) v.findViewById(R.id.etCaption));
 

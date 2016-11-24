@@ -4,8 +4,9 @@ import android.app.Application;
 
 import com.codepath.finderapp.models.PicturePost;
 import com.parse.Parse;
-import com.parse.ParseObject;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseInstallation;
+import com.parse.ParseObject;
 import com.parse.interceptors.ParseLogInterceptor;
 
 /**
@@ -30,6 +31,8 @@ public class finderAppApplication extends Application {
                 .addNetworkInterceptor(new ParseLogInterceptor())
                 .server("http://finderkeeper.herokuapp.com/parse").build());
 
+        // Need to register GCM token
+        ParseInstallation.getCurrentInstallation().saveInBackground();
         // ParseFacebookUtils should initialize the Facebook SDK for you
         ParseFacebookUtils.initialize(this);
     }
