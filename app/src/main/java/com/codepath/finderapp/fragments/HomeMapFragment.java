@@ -48,12 +48,16 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import butterknife.BindView;
@@ -89,6 +93,8 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     private double zoomLevel = 15;
     private LocationRequest locationRequest;
     private Marker currentMarker;
+    private Set<Marker> clicked = new HashSet<>();
+    private Map<PicturePost, Marker> postToMarkers = new HashMap<>();
 
     @BindView(R.id.home_map_wrapper)
     MapWrapperLayout wrapperLayout;
@@ -152,6 +158,8 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
             stopPeriodUpdates();
         }
         pinList.clear();
+        clicked.clear();
+        postToMarkers.clear();
     }
 
     @Override
@@ -172,7 +180,30 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                 currentMarker = marker;
                 PicturePost pin = findMatchedPin(marker.getPosition().latitude, marker.getPosition().longitude);
                 try {
-                    Picasso.with(getActivity()).load(pin.getImage().getFile()).fit().centerCrop().into(image);
+                    if(clicked.contains(marker)) {
+                        Picasso.with(getActivity()).load(pin.getImage().getFile()).fit().centerCrop().into(image);
+                    }
+                    else {
+                        //TODO
+                        clicked.add(marker);
+                        Picasso.with(getActivity()).load(pin.getImage().getFile()).fit().centerCrop().into(image, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d(TAG, "image load successfully");
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        currentMarker.showInfoWindow();
+                                    }
+                                }, 200);
+                            }
+
+                            @Override
+                            public void onError() {
+
+                            }
+                        });
+                    }
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -194,13 +225,13 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                 }
                 caption.setText(pin.getText());
                 marker.showInfoWindow();
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        marker.showInfoWindow();
-                    }
-                }, 800);
+//                Handler handler = new Handler();
+//                handler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        marker.showInfoWindow();
+//                    }
+//                }, 800);
                 return false;
             }
         });
@@ -244,24 +275,44 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                     Toast.makeText(getActivity(), "server error", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                boolean found = false;
+//                boolean found = false;
+//                for(PicturePost post : objects) {
+//                    if(!pinList.contains(post)) {
+//                        found = true;
+//                        break;
+//                    }
+//                }
+//                if(!found) {
+//                    Log.d(TAG, "no change");
+//                    return;
+//                }
+//                map.clear();
+//                pinList.clear();
+//                clicked.clear();
+//                pinList.addAll(objects);
+//                for(PicturePost post : pinList) {
+//                    BitmapDescriptor icon = MapUtils.createBubble(getActivity(), IconGenerator.STYLE_BLUE, "zoomPin");
+//                    Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+//                    MapUtils.dropPinEffect(marker);
+//                }
                 for(PicturePost post : objects) {
-                    if(!pinList.contains(post)) {
-                        found = true;
-                        break;
+                    if(pinList.contains(post)) {
+                        continue;
                     }
-                }
-                if(!found) {
-                    Log.d(TAG, "no change");
-                    return;
-                }
-                map.clear();
-                pinList.clear();
-                pinList.addAll(objects);
-                for(PicturePost post : pinList) {
+                    pinList.add(post);
                     BitmapDescriptor icon = MapUtils.createBubble(getActivity(), IconGenerator.STYLE_BLUE, "zoomPin");
                     Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
                     MapUtils.dropPinEffect(marker);
+                    postToMarkers.put(post, marker);
+                }
+                Iterator<PicturePost> iterator = pinList.iterator();
+                while(iterator.hasNext()) {
+                    PicturePost post = iterator.next();
+                    if(!objects.contains(post)) {
+                        iterator.remove();
+                        postToMarkers.get(post).remove();
+                        postToMarkers.remove(post);
+                    }
                 }
             }
         });
@@ -285,6 +336,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
             @Override
             public void done(List<PicturePost> objects, ParseException e) {
                 pinList.clear();
+                clicked.clear();
                 pinList.addAll(objects);
                 Log.d(TAG, objects.size() + "");
                 if(map != null) {
@@ -412,6 +464,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         BitmapDescriptor icon = MapUtils.createBubble(finderAppApplication.getApplication().getApplicationContext(), IconGenerator.STYLE_BLUE, "title");
         Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
         MapUtils.dropPinEffect(marker);
+        postToMarkers.put(post, marker);
         moveCamera(lastLocation);
     }
 
