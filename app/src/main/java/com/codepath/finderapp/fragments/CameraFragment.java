@@ -9,18 +9,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.SurfaceHolder;
-import android.view.SurfaceHolder.Callback;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
+import com.codepath.finderapp.CameraPreview;
 import com.codepath.finderapp.R;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 /**
  * Created by chmanish on 11/11/16.
@@ -28,32 +25,56 @@ import java.io.IOException;
 public class CameraFragment extends Fragment {
     public static final String TAG = "CameraFragment";
 
-    private Camera camera;
-    private SurfaceView surfaceView;
-    private ImageButton photoButton;
     private int rotation = 90;
+    private static ImageButton photoButton;
+
+
+    private Camera mCamera;
+    private CameraPreview mPreview;
+    private FrameLayout preview;
 
     public interface CameraFragmentDialogListener {
         void createParseFile(byte[] data);
 
     }
+
+    public static Camera getCameraInstance(){
+        Camera c = null;
+        try {
+            c = Camera.open(); // attempt to get a Camera instance
+            Camera.Parameters params = c.getParameters();
+            params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            c.setParameters(params);
+            photoButton.setEnabled(true);
+        }
+        catch (Exception e){
+            Log.e(TAG, "No camera with exception: " + e.getMessage());
+            photoButton.setEnabled(false);
+        }
+        return c; // returns null if camera is unavailable
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_camera, parent, false);
         photoButton = (ImageButton) v.findViewById(R.id.camera_photo_button);
 
-        if (camera == null) {
-            setupCamera();
-        }
+        // Create an instance of Camera
+        mCamera = getCameraInstance();
+        // Create our Preview view and set it as the content of our activity.
+        mPreview = new CameraPreview(getActivity(), mCamera);
+        preview = (FrameLayout) v.findViewById(R.id.camera_preview);
+        preview.addView(mPreview);
 
         photoButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                if (camera == null)
+                if (mCamera == null) {
                     return;
-                camera.takePicture(new Camera.ShutterCallback() {
+                }
+                mCamera.takePicture(new Camera.ShutterCallback() {
 
                     @Override
                     public void onShutter() {
@@ -72,51 +93,7 @@ public class CameraFragment extends Fragment {
             }
         });
 
-        surfaceView = (SurfaceView) v.findViewById(R.id.camera_surface_view);
-        SurfaceHolder holder = surfaceView.getHolder();
-        holder.addCallback(new Callback() {
-
-            public void surfaceCreated(SurfaceHolder holder) {
-                try {
-                    if (camera != null) {
-                        camera.setDisplayOrientation(rotation);
-                        camera.setPreviewDisplay(holder);
-                        camera.startPreview();
-                    }
-                } catch (IOException e) {
-                    Log.e(TAG, "Error setting up preview", e);
-                }
-            }
-
-            public void surfaceChanged(SurfaceHolder holder, int format,
-                                       int width, int height) {
-                // nothing to do here
-            }
-
-            public void surfaceDestroyed(SurfaceHolder holder) {
-                // nothing here
-            }
-
-        });
-
         return v;
-    }
-
-    private void setupCamera(){
-        try {
-            camera = Camera.open();
-            //set camera to continually auto-focus
-            Camera.Parameters params = camera.getParameters();
-            params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-            camera.setParameters(params);
-            photoButton.setEnabled(true);
-        } catch (Exception e) {
-            Log.e(TAG, "No camera with exception: " + e.getMessage());
-            photoButton.setEnabled(false);
-            Toast.makeText(getActivity(), "No camera detected",
-                    Toast.LENGTH_SHORT).show();
-        }
-
     }
 
     private void startCaptionFragment(Bitmap rotatedScaledMealImage) {
@@ -156,8 +133,6 @@ public class CameraFragment extends Fragment {
         mListener.createParseFile(scaledData);
 
         startCaptionFragment(rotatedScaledMealImage);
-        if (camera != null)
-            camera.startPreview();
 
 
     }
@@ -166,17 +141,24 @@ public class CameraFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (camera == null) {
-            setupCamera();
+
+        if (mCamera == null){
+
+            mCamera = getCameraInstance();
+            preview.removeAllViews();
+            mPreview = new CameraPreview(getActivity(), mCamera);
+            preview.addView(mPreview);
+
         }
     }
 
     @Override
     public void onPause() {
-        if (camera != null) {
-            camera.stopPreview();
-        }
         super.onPause();
+        if (mCamera != null){
+            mCamera.release();
+            mCamera = null;
+        }
     }
 
     @Override

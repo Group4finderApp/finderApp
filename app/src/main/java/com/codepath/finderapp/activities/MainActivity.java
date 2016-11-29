@@ -30,7 +30,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.codepath.finderapp.activities.DispatchActivity;
 import com.codepath.finderapp.MyCustomReceiver;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.HomeViewPagerAdapter;
@@ -301,12 +300,17 @@ public class MainActivity extends AppCompatActivity implements
 
         @Override
         public void onPageSelected(int position) {
+            CameraFragment cameraFragment = (CameraFragment) getSupportFragmentManager()
+                    .findFragmentByTag("android:switcher:" + R.id.activity_main_view_pager + ":" +
+                            "1");
             switch (position) {
                 case 0:
                     toolbarContainer.setVisibility(View.VISIBLE);
+                    cameraFragment.onPause();
                     break;
                 default:
                     toolbarContainer.setVisibility(View.INVISIBLE);
+                    cameraFragment.onResume();
                     break;
             }
         }
