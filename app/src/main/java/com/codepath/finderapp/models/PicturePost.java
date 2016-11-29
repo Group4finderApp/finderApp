@@ -6,13 +6,14 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
 import java.util.Arrays;
+import org.parceler.Parcel;
 
 /**
  * Data model for a post.
  */
 
+@Parcel(analyze={PicturePost.class})   // add Parceler annotation here
 @ParseClassName("Posts")
 public class PicturePost extends ParseObject {
 

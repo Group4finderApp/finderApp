@@ -29,7 +29,7 @@ public class finderAppApplication extends Application {
                 .applicationId("finderkeeper") // should correspond to APP_ID env variable
                 .clientKey(null)  // set explicitly unless clientKey is explicitly configured on Parse server
                 .addNetworkInterceptor(new ParseLogInterceptor())
-                .server("http://finderkeeper.herokuapp.com/parse").build());
+                .server("http://finderkeeper.herokuapp.com/parse/").build());
 
         // Need to register GCM token
         ParseInstallation.getCurrentInstallation().saveInBackground();

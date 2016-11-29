@@ -252,18 +252,16 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
-        // Create a new fragment and specify the fragment to show based on nav item clicked
-        //Fragment fragment = null;
-        //Class fragmentClass = null;
-
+        // Intent for photos/album
+        Intent i = null;
         switch (menuItem.getItemId()) {
             case R.id.photos:
-                //fragmentClass = ImagesActivity.class;
-                startActivity(new Intent(this, ImagesActivity.class));
+                i = new Intent(this, ImagesActivity.class);
+                i.putExtra("type", ImagesActivity.PHOTOS_VIEW);
                 break;
             case R.id.albums:
-                //fragmentClass = ImagesActivity.class;
-                startActivity(new Intent(this, ImagesActivity.class));
+                i = new Intent(this, ImagesActivity.class);
+                i.putExtra("type", ImagesActivity.ALBUM_VIEW);
                 break;
             case R.id.logout:
                 onLogout();
@@ -271,20 +269,10 @@ public class MainActivity extends AppCompatActivity implements
             default:
                 break;
         }
-/**
-        if (fragment != null) {
-            try {
-                fragment = (Fragment) fragmentClass.newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
-            // Insert the fragment by replacing any existing fragment
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+        if (i != null) {
+            startActivity(i);
         }
-
-**/
         // Highlight the selected item has been done by NavigationView
         menuItem.setChecked(true);
         // Set action bar title
