@@ -185,31 +185,42 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
             public boolean onMarkerClick(final Marker marker) {
                 currentMarker = marker;
                 PicturePost pin = findMatchedPin(marker.getPosition().latitude, marker.getPosition().longitude);
-                if(clicked.contains(marker)) {
-                    Picasso.with(getActivity()).load(pin.getImage().getUrl()).fit().centerCrop().into(image);
-                }
-                else {
-                    //TODO
-                    clicked.add(marker);
-                    marker.showInfoWindow();
-                    Picasso.with(getActivity()).load(pin.getImage().getUrl()).fit().centerCrop().into(image, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            Log.d(TAG, "image load successfully");
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    currentMarker.showInfoWindow();
-                                }
-                            }, 200);
-                        }
+                try {
 
-                        @Override
-                        public void onError() {
-                            Log.d(TAG, "image load fail");
+                    if(clicked.contains(marker)) {
+                        try {
+                            Picasso.with(getActivity()).load(pin.getImage().getFile()).fit().centerCrop().into(image);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
                         }
-                    });
+                    }
+                    else {
+                        //TODO
+                        clicked.add(marker);
+                        marker.showInfoWindow();
+                        Picasso.with(getActivity()).load(pin.getImage().getFile()).fit().centerCrop().into(image, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d(TAG, "image load successfully");
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        currentMarker.showInfoWindow();
+                                    }
+                                }, 200);
+                            }
+
+                            @Override
+                            public void onError() {
+                                Log.d(TAG, "image load fail");
+                            }
+                        });
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
+
 
                 if(pin.getThumbsUp() == null) {
                     Log.d(TAG, "thumbs null");
@@ -462,12 +473,12 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         if(lastLocation == null) {
             return;
         }
-        pinList.add(post);
+//        pinList.add(post);
         moveCamera(lastLocation);
-        BitmapDescriptor icon = MapUtils.createBubble(finderAppApplication.getApplication().getApplicationContext(), IconGenerator.STYLE_BLUE, "title");
-        Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
-        MapUtils.dropPinEffect(marker);
-        postToMarkers.put(post, marker);
+//        BitmapDescriptor icon = MapUtils.createBubble(finderAppApplication.getApplication().getApplicationContext(), IconGenerator.STYLE_BLUE, "title");
+//        Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+//        MapUtils.dropPinEffect(marker);
+//        postToMarkers.put(post, marker);
         moveCamera(lastLocation);
 
         ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
