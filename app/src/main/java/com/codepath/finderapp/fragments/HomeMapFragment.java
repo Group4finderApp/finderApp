@@ -238,7 +238,6 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                     thumbDown.setImageResource(R.drawable.thumb_down);
                 }
                 caption.setText(pin.getText());
-                marker.showInfoWindow();
 //                Handler handler = new Handler();
 //                handler.postDelayed(new Runnable() {
 //                    @Override
@@ -246,7 +245,11 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 //                        marker.showInfoWindow();
 //                    }
 //                }, 800);
-                return false;
+                marker.showInfoWindow();
+                LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
+                LatLng moveToPos = getLocationWithOffset(marker, bounds);
+                updateCameraLocationWithOffset(moveToPos);
+                return true;
             }
         });
 
@@ -272,6 +275,12 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
             }
         });
 //        map.setOnInfoWindowClickListener(this);
+    }
+
+    private LatLng getLocationWithOffset(Marker marker, LatLngBounds bounds) {
+        double latitude = marker.getPosition().latitude + (bounds.northeast.latitude - bounds.southwest.latitude) * 0.2;
+        double longitude = marker.getPosition().longitude;
+        return new LatLng(latitude, longitude);
     }
 
     private void fetchDataAfterZoom(LatLngBounds bounds, int k) {
@@ -403,6 +412,11 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latlng, 15);
         map.animateCamera(update, this);
 //        getKNearestPins(latlng.latitude, latlng.longitude, 5);
+    }
+
+    private void updateCameraLocationWithOffset (LatLng latlng) {
+        CameraUpdate update = CameraUpdateFactory.newLatLng(latlng);
+        map.animateCamera(update, this);
     }
 
     private void moveCamera(Location location) {
