@@ -39,6 +39,7 @@ The following **bonus** features are implemented:
 Here's a walkthrough of implemented user stories:
 
 [Imgur](http://i.imgur.com/4eFw3UI.gifv)
+[Youtube] (https://www.youtube.com/watch?v=lJrTg_87xjg&feature=youtu.be)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
