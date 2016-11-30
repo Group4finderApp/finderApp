@@ -1,6 +1,7 @@
 package com.codepath.finderapp.fragments;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -11,6 +12,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -84,6 +86,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     private static final int FAST_CEILING_IN_MILLISECONDS = FAST_CEILING_IN_SECONDS * MILLISECONDS_PER_SECOND;
     private static final double FETCH_DATA_THREHOLD = 0.1;
     private static final double ZOOM_LEVEL_THREHOLD = 0.2;
+    private static final double maxRadius = 1;
 
     private SupportMapFragment mapFragment;
     public static GoogleMap map;
@@ -94,7 +97,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     private LocationRequest locationRequest;
     private Marker currentMarker;
     private Set<Marker> clicked = new HashSet<>();
-    private Map<PicturePost, Marker> postToMarkers = new HashMap<>();
+    private static Map<PicturePost, Marker> postToMarkers = new HashMap<>();
 
     @BindView(R.id.home_map_wrapper)
     MapWrapperLayout wrapperLayout;
@@ -179,33 +182,30 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
             public boolean onMarkerClick(final Marker marker) {
                 currentMarker = marker;
                 PicturePost pin = findMatchedPin(marker.getPosition().latitude, marker.getPosition().longitude);
-                try {
-                    if(clicked.contains(marker)) {
-                        Picasso.with(getActivity()).load(pin.getImage().getFile()).fit().centerCrop().into(image);
-                    }
-                    else {
-                        //TODO
-                        clicked.add(marker);
-                        Picasso.with(getActivity()).load(pin.getImage().getFile()).fit().centerCrop().into(image, new Callback() {
-                            @Override
-                            public void onSuccess() {
-                                Log.d(TAG, "image load successfully");
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        currentMarker.showInfoWindow();
-                                    }
-                                }, 200);
-                            }
+                if(clicked.contains(marker)) {
+                    Picasso.with(getActivity()).load(pin.getImage().getUrl()).fit().centerCrop().into(image);
+                }
+                else {
+                    //TODO
+                    clicked.add(marker);
+                    marker.showInfoWindow();
+                    Picasso.with(getActivity()).load(pin.getImage().getUrl()).fit().centerCrop().into(image, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d(TAG, "image load successfully");
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    currentMarker.showInfoWindow();
+                                }
+                            }, 200);
+                        }
 
-                            @Override
-                            public void onError() {
-
-                            }
-                        });
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                        @Override
+                        public void onError() {
+                            Log.d(TAG, "image load fail");
+                        }
+                    });
                 }
 
                 if(pin.getThumbsUp() == null) {
@@ -466,6 +466,29 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         MapUtils.dropPinEffect(marker);
         postToMarkers.put(post, marker);
         moveCamera(lastLocation);
+
+//        ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
+//        ParseGeoPoint currentLocation = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
+//        query.whereWithinMiles("location", currentLocation, maxRadius);
+//        query.findInBackground(new FindCallback<PicturePost>() {
+//            @Override
+//            public void done(List<PicturePost> objects, ParseException e) {
+//                Log.d(TAG, objects.size() + " nearby");
+//                if(objects.size() == 0) {
+//                    new AlertDialog.Builder(finderAppApplication.getApplication().getApplicationContext())
+//                            .setTitle("Congratulation")
+//                            .setMessage("You are the first one post picture within this area")
+//                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    dialog.dismiss();
+//                                }
+//                            })
+//                            .create()
+//                            .show();
+//                }
+//            }
+//        });
     }
 
     @Override
