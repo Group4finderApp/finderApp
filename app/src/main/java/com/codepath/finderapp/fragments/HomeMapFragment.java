@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
@@ -98,6 +99,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     private Marker currentMarker;
     private Set<Marker> clicked = new HashSet<>();
     private static Map<PicturePost, Marker> postToMarkers = new HashMap<>();
+    private static AlertDialog.Builder builder;
 
     @BindView(R.id.home_map_wrapper)
     MapWrapperLayout wrapperLayout;
@@ -151,6 +153,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         super.onStart();
         Log.d(TAG, "connect");
         googleApiClient.connect();
+        builder = new AlertDialog.Builder(getActivity());
     }
 
     @Override
@@ -182,31 +185,42 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
             public boolean onMarkerClick(final Marker marker) {
                 currentMarker = marker;
                 PicturePost pin = findMatchedPin(marker.getPosition().latitude, marker.getPosition().longitude);
-                if(clicked.contains(marker)) {
-                    Picasso.with(getActivity()).load(pin.getImage().getUrl()).fit().centerCrop().into(image);
-                }
-                else {
-                    //TODO
-                    clicked.add(marker);
-                    marker.showInfoWindow();
-                    Picasso.with(getActivity()).load(pin.getImage().getUrl()).fit().centerCrop().into(image, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            Log.d(TAG, "image load successfully");
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    currentMarker.showInfoWindow();
-                                }
-                            }, 200);
-                        }
+                try {
 
-                        @Override
-                        public void onError() {
-                            Log.d(TAG, "image load fail");
+                    if(clicked.contains(marker)) {
+                        try {
+                            Picasso.with(getActivity()).load(pin.getImage().getFile()).fit().centerCrop().into(image);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
                         }
-                    });
+                    }
+                    else {
+                        //TODO
+                        clicked.add(marker);
+                        marker.showInfoWindow();
+                        Picasso.with(getActivity()).load(pin.getImage().getFile()).fit().centerCrop().into(image, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d(TAG, "image load successfully");
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        currentMarker.showInfoWindow();
+                                    }
+                                }, 200);
+                            }
+
+                            @Override
+                            public void onError() {
+                                Log.d(TAG, "image load fail");
+                            }
+                        });
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
+
 
                 if(pin.getThumbsUp() == null) {
                     Log.d(TAG, "thumbs null");
@@ -459,36 +473,35 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         if(lastLocation == null) {
             return;
         }
-        pinList.add(post);
+//        pinList.add(post);
         moveCamera(lastLocation);
-        BitmapDescriptor icon = MapUtils.createBubble(finderAppApplication.getApplication().getApplicationContext(), IconGenerator.STYLE_BLUE, "title");
-        Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
-        MapUtils.dropPinEffect(marker);
-        postToMarkers.put(post, marker);
+//        BitmapDescriptor icon = MapUtils.createBubble(finderAppApplication.getApplication().getApplicationContext(), IconGenerator.STYLE_BLUE, "title");
+//        Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+//        MapUtils.dropPinEffect(marker);
+//        postToMarkers.put(post, marker);
         moveCamera(lastLocation);
 
-//        ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
-//        ParseGeoPoint currentLocation = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
-//        query.whereWithinMiles("location", currentLocation, maxRadius);
-//        query.findInBackground(new FindCallback<PicturePost>() {
-//            @Override
-//            public void done(List<PicturePost> objects, ParseException e) {
-//                Log.d(TAG, objects.size() + " nearby");
-//                if(objects.size() == 0) {
-//                    new AlertDialog.Builder(finderAppApplication.getApplication().getApplicationContext())
-//                            .setTitle("Congratulation")
-//                            .setMessage("You are the first one post picture within this area")
-//                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    dialog.dismiss();
-//                                }
-//                            })
-//                            .create()
-//                            .show();
-//                }
-//            }
-//        });
+        ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
+        ParseGeoPoint currentLocation = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
+        query.whereWithinMiles("location", currentLocation, maxRadius);
+        query.findInBackground(new FindCallback<PicturePost>() {
+            @Override
+            public void done(List<PicturePost> objects, ParseException e) {
+                Log.d(TAG, objects.size() + " nearby");
+                if(objects.size() == 0) {
+                    builder.setTitle("Congratulation")
+                            .setMessage("You are the first person post picture within this area")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .create()
+                            .show();
+                }
+            }
+        });
     }
 
     @Override
