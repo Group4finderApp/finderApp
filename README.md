@@ -14,17 +14,20 @@ The following **required** functionality is completed:
 * [x] User can switch tabs to access the camera and take a picture
   * [x] They can caption the picture and thumbs up or down.
   * [x] The app should save the picture to the db with the location
-  * [ ] If multiple pictures are taken in a time period (still to decide), app should be able to club together (sense of a trip)
-* [x] User can view his profile from the action bar, which should bring up a navigation bar.
+ * [x] User can view his profile from the action bar, which should bring up a navigation bar.
   * [x] User can also swipe left to bring up the same
-* [ ] The profile view should include his trips taken
+* [x] The photos view should include his trips taken
+* [x] User can search for a particular location on the map and see nearby pins.
+* [x] After clicking on a marker, if the user moves on the map, the card view should disappear.
+* [x] Grouping of markers on zooming in and zooming out
 
 The following **optional** features are implemented:
 
-* [ ] If a friend posts a picture in an x-mile radius, User should get a push notification
+* [x] If a friend posts a picture in an x-mile radius, User should get a push notification
+* [ ] If multiple pictures are taken in a time period (still to decide), app should be able to club together (sense of a trip)
 * [ ] Create a splash screen with a video in the background
 * [ ] In the trips taken, the first picture should be a summary picture on the map
-* [ ] When we show points on the map where friends have visited, embed a card view of the picture on the map for a quick view.
+* [x] When we show points on the map where friends have visited, embed a card view of the picture on the map for a quick view.
 * [ ] Capability to see friend's profile, with their trips.
 
 The following **bonus** features are implemented:
@@ -35,7 +38,7 @@ The following **bonus** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-[Imgur](http://i.imgur.com/sNkWHL4.gifv)
+[Imgur](http://i.imgur.com/4eFw3UI.gifv)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
