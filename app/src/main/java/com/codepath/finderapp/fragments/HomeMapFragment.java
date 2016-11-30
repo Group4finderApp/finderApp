@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
@@ -98,6 +99,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     private Marker currentMarker;
     private Set<Marker> clicked = new HashSet<>();
     private static Map<PicturePost, Marker> postToMarkers = new HashMap<>();
+    private static AlertDialog.Builder builder;
 
     @BindView(R.id.home_map_wrapper)
     MapWrapperLayout wrapperLayout;
@@ -151,6 +153,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         super.onStart();
         Log.d(TAG, "connect");
         googleApiClient.connect();
+        builder = new AlertDialog.Builder(getActivity());
     }
 
     @Override
@@ -467,28 +470,27 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         postToMarkers.put(post, marker);
         moveCamera(lastLocation);
 
-//        ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
-//        ParseGeoPoint currentLocation = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
-//        query.whereWithinMiles("location", currentLocation, maxRadius);
-//        query.findInBackground(new FindCallback<PicturePost>() {
-//            @Override
-//            public void done(List<PicturePost> objects, ParseException e) {
-//                Log.d(TAG, objects.size() + " nearby");
-//                if(objects.size() == 0) {
-//                    new AlertDialog.Builder(finderAppApplication.getApplication().getApplicationContext())
-//                            .setTitle("Congratulation")
-//                            .setMessage("You are the first one post picture within this area")
-//                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    dialog.dismiss();
-//                                }
-//                            })
-//                            .create()
-//                            .show();
-//                }
-//            }
-//        });
+        ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
+        ParseGeoPoint currentLocation = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
+        query.whereWithinMiles("location", currentLocation, maxRadius);
+        query.findInBackground(new FindCallback<PicturePost>() {
+            @Override
+            public void done(List<PicturePost> objects, ParseException e) {
+                Log.d(TAG, objects.size() + " nearby");
+                if(objects.size() == 0) {
+                    builder.setTitle("Congratulation")
+                            .setMessage("You are the first person post picture within this area")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .create()
+                            .show();
+                }
+            }
+        });
     }
 
     @Override
