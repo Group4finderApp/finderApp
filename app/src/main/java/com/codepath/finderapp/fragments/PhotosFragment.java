@@ -17,13 +17,16 @@ import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
 import com.bignerdranch.android.multiselector.MultiSelector;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.ImagesAdapter;
+import com.codepath.finderapp.models.ImageAlbum;
 import com.codepath.finderapp.models.PicturePost;
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -84,27 +87,49 @@ public class PhotosFragment extends Fragment {
                             pic.deleteInBackground(new DeleteCallback() {
                                 public void done(ParseException e) {
                                     if (e == null) {
-                                        myPhotos.remove(i);
-                                        imageAdapter.notifyItemRemoved(i);
-                                        Log.d("DEBUG", "Item " + i + " deleted");
+                                        Log.d("DEBUG", "Post deleted");
                                     } else {
-                                        Toast.makeText(getActivity(),"  not deleted",
+                                        Toast.makeText(getActivity(),"Oops, one or more pictures not deleted",
                                                 Toast.LENGTH_SHORT).show();
                                         e.printStackTrace();
                                     }
                                 }
                             });
+                            myPhotos.remove(i);
+                            imageAdapter.notifyItemRemoved(i);
                         }
                     }
                     mMultiSelector.clearSelections();
                     return true;
                 } else if (menuItem.getItemId() == R.id.addAlbum) {
                     actionMode.finish();
+                    ImageAlbum album = new ImageAlbum();
+                    ArrayList<String> selectedPics = new ArrayList<>();
                     for (i = myPhotos.size(); i >= 0; i--) {
                         if (mMultiSelector.isSelected(i, 0)) {
                             PicturePost pic = myPhotos.get(i);
+                            selectedPics.add(pic.getObjectId());
                             Log.d("DEBUG", pic.toString());
                         }
+                    }
+                    if (selectedPics.size() > 0) {
+                        album.addPicIds(selectedPics.toArray(new String[selectedPics.size()]));
+                        album.saveInBackground(new SaveCallback() {
+
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    Log.d("DEBUG", "album saved");
+                                } else {
+                                    Toast.makeText(
+                                            getActivity(),
+                                            "Error saving album: " + e.getMessage(),
+                                            Toast.LENGTH_SHORT).show();
+
+                                }
+                            }
+
+                        });
                     }
                     mMultiSelector.clearSelections();
                     return true;

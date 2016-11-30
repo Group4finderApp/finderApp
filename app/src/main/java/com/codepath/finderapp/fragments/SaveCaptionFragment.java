@@ -107,6 +107,7 @@ public class SaveCaptionFragment extends DialogFragment {
                 // Give public read access
                 // TODO: Update ACL
                 acl.setPublicReadAccess(true);
+                acl.setPublicWriteAccess(true);
                 post.setACL(acl);
 
                 SaveCaptionFragmentDialogListener mListener = (SaveCaptionFragmentDialogListener) getActivity();
