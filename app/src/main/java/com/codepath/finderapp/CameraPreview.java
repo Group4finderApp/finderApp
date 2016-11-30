@@ -12,7 +12,7 @@ import java.io.IOException;
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder mHolder;
     private Camera mCamera;
-    private int rotation = 270;
+    private int rotation = 90;
 
     public CameraPreview(Context context, Camera camera) {
         super(context);
