@@ -12,6 +12,11 @@
         android:title="Albums"/>
 
     <item
+        android:id="@+id/invite_button"
+        android:icon="@drawable/ic_invite_friends"
+        android:title="Invite Friends"/>
+
+    <item
         android:id="@+id/logout"
         android:icon="@drawable/ic_logout"
         android:title="@string/logout"/>

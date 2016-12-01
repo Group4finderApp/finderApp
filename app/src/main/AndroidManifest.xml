@@ -71,22 +71,6 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name=".activities.DispatchActivity"
-            android:noHistory="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Accepts URIs "com.example.myapp://" -->
-                <data android:scheme="com.codepath.finderapp" />
-            </intent-filter>
-        </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -103,7 +87,19 @@
             android:name=".activities.WelcomeActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Holo" />
+            android:theme="@android:style/Theme.Holo" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs "com.example.myapp://" -->
+                <data android:scheme="com.codepath.finderapp" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="io.fabric.ApiKey"

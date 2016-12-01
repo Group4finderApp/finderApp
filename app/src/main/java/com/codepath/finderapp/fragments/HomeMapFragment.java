@@ -173,6 +173,8 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         map = googleMap;
         checkPermission();
         map.setMyLocationEnabled(true);
+        //hide default my location button
+        map.getUiSettings().setMyLocationButtonEnabled(false);
 
         wrapperLayout.init(googleMap, AppUtils.getPixelsFromDp(getActivity(), 39 + 20));
         PinAdapter adapter = new PinAdapter(getActivity().getLayoutInflater(), getActivity(), infoWindow);

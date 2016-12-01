@@ -30,7 +30,10 @@ public class ImagesActivity extends AppCompatActivity
         setContentView(R.layout.activity_images);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setNavigationIcon(R.drawable.ic_return_home);
+        // Remove default title text
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         //getSupportActionBar().setDisplayUseLogoEnabled(true);
         //android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         //actionBar.setDisplayHomeAsUpEnabled(true);

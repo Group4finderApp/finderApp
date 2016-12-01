@@ -8,12 +8,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.network.FacebookGraphClient;
-import com.facebook.share.model.AppInviteContent;
-import com.facebook.share.widget.AppInviteDialog;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
@@ -31,16 +28,9 @@ public class WelcomeActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-        boolean hideLogin = getIntent().getBooleanExtra("hide_login", false);
-        Button appInvite = (Button) findViewById(R.id.invite_button);
-        Button skipInvite = (Button) findViewById(R.id.continue_button);
+        //Uri targetUrl = AppLinks.getTargetUrlFromInboundIntent(this, getIntent());
         // Sign up with facebook
         Button facebookLoginButton = (Button) findViewById(R.id.facebooklogin_button);
-        if (hideLogin) {
-            facebookLoginButton.setVisibility(View.GONE);
-        } else {
-            skipInvite.setVisibility(View.GONE);
-        }
         facebookLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,39 +45,25 @@ public class WelcomeActivity extends Activity {
                                     Log.d("Debug", "Error occurred" + err.toString());
                                 } else if (user == null) {
                                     Log.d("Debug", "The user cancelled the Facebook login.");
-                                } else if (user.isNew()) {
-                                    Log.d("Debug", "User signed up and logged in through Facebook!");
+                                } else {
+                                    if (user.isNew()) {
+                                        Log.d("Debug", "User signed up and logged in through Facebook!");
+                                    } else {
+                                        Log.d("Debug", "Logged in " + user.getUsername());
+                                        Log.d("Debug", "User logged in through Facebook!");
+                                    }
                                     FacebookGraphClient.getUserDetailsFromFB();
                                     // Start an intent for the dispatch activity
-                                    Toast.makeText(WelcomeActivity.this, user.getEmail(), Toast.LENGTH_SHORT)
-                                            .show();
-                                    startMainActivity();
-                                } else {
-                                    Toast.makeText(WelcomeActivity.this, "Logged in " + user.getUsername(), Toast.LENGTH_SHORT)
-                                            .show();
-                                    Log.d("Debug", "User logged in through Facebook!");
                                     startMainActivity();
                                 }
                             }
                         });
             }
         });
-        if (hideLogin)
-            facebookLoginButton.setVisibility(View.INVISIBLE);
 
-        appInvite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SendInvite();
-            }
-        });
-
-        skipInvite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startMainActivity();
-            }
-        });
+        if (ParseUser.getCurrentUser() != null) {
+            startMainActivity();
+        }
     }
 
     @Override
@@ -100,18 +76,6 @@ public class WelcomeActivity extends Activity {
         Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-    }
-
-    public void SendInvite() {
-        String appLinkUrl =  "https://fb.me/161679120966718";
-        String previewImageUrl = "https://i.imgur.com/XgxWfyF.png";
-        if (AppInviteDialog.canShow()) {
-            AppInviteContent content = new AppInviteContent.Builder()
-                    .setApplinkUrl(appLinkUrl)
-                    .setPreviewImageUrl(previewImageUrl)
-                    .build();
-            AppInviteDialog.show(this, content);
-        }
     }
 
 }

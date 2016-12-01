@@ -20,7 +20,7 @@ public class FacebookGraphClient {
 
     public static void getUserDetailsFromFB() {
         final Bundle parameters = new Bundle();
-        parameters.putString("fields", "email,name,picture");
+        parameters.putString("fields", "email,name,picture.type(large)");
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/me",
