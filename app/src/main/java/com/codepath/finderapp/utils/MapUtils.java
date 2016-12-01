@@ -11,7 +11,12 @@ import com.google.maps.android.ui.IconGenerator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.SystemClock;
+import android.support.annotation.Dimension;
+import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.BounceInterpolator;
+import android.view.animation.Interpolator;
+import android.widget.ImageView;
 
 /**
  * Make sure you have included the Android Maps Utility library
@@ -34,6 +39,13 @@ public class MapUtils {
         return bitmapDescriptor;
     }
 
+    public static ImageView createImageViewForMarker(Context context) {
+        ImageView imageView = new ImageView(context);
+        imageView.setLayoutParams(new ViewGroup.LayoutParams(AppUtils.dpToPixels(50, context.getResources()), AppUtils.dpToPixels(50, context.getResources())));
+        imageView.setPadding(AppUtils.dpToPixels(2, context.getResources()), AppUtils.dpToPixels(2, context.getResources()), AppUtils.dpToPixels(2, context.getResources()), AppUtils.dpToPixels(2, context.getResources()));
+        return imageView;
+    }
+
     public static Marker addMarker(GoogleMap map, LatLng point, String title,
                                    String snippet,
                                    BitmapDescriptor marker) {
@@ -46,15 +58,28 @@ public class MapUtils {
         return map.addMarker(options);
     }
 
+    public static Marker addMarker(GoogleMap map, LatLng point, String title,
+                                   String snippet,
+                                   Bitmap icon) {
+        // Creates and adds marker to the map
+        MarkerOptions options = new MarkerOptions()
+                .position(point)
+                .icon(BitmapDescriptorFactory.fromBitmap(icon));
+        return map.addMarker(options);
+    }
+
     public static void dropPinEffect(final Marker marker) {
         // Handler allows us to repeat a code block after a specified delay
         final android.os.Handler handler = new android.os.Handler();
         final long start = SystemClock.uptimeMillis();
-        final long duration = 1500;
+        final long duration = 800;
 
         // Use the bounce interpolator
-        final android.view.animation.Interpolator interpolator =
-                new BounceInterpolator();
+//        final android.view.animation.Interpolator interpolator =
+//                new BounceInterpolator();
+
+        final Interpolator interpolator = new AccelerateInterpolator();
+
 
         // Animate marker with a bounce updating its position every 15ms
         handler.post(new Runnable() {
@@ -66,7 +91,7 @@ public class MapUtils {
                         1 - interpolator.getInterpolation((float) elapsed
                                 / duration), 0);
                 // Set the anchor
-                marker.setAnchor(0.5f, 1.0f + 14 * t);
+                marker.setAnchor(0.5f, 1.0f + 35 * t);
 
                 if (t > 0.0) {
                     // Post this event again 15ms from now.
