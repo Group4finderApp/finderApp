@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.network.FacebookGraphClient;
@@ -59,12 +58,9 @@ public class WelcomeActivity extends Activity {
                                     Log.d("Debug", "User signed up and logged in through Facebook!");
                                     FacebookGraphClient.getUserDetailsFromFB();
                                     // Start an intent for the dispatch activity
-                                    Toast.makeText(WelcomeActivity.this, user.getEmail(), Toast.LENGTH_SHORT)
-                                            .show();
                                     startMainActivity();
                                 } else {
-                                    Toast.makeText(WelcomeActivity.this, "Logged in " + user.getUsername(), Toast.LENGTH_SHORT)
-                                            .show();
+                                    Log.d("Debug", "Logged in " + user.getUsername());
                                     Log.d("Debug", "User logged in through Facebook!");
                                     startMainActivity();
                                 }
