@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements
 
         post = new PicturePost();
 
-        adapter = new HomeViewPagerAdapter(getSupportFragmentManager());
+        adapter = new HomeViewPagerAdapter(getSupportFragmentManager(), this);
         //viewPager.setOffscreenPageLimit(1);
         viewPager.setAdapter(adapter);
         //show and hide toolbar

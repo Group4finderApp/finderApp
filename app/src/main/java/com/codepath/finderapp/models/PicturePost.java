@@ -1,5 +1,6 @@
 package com.codepath.finderapp.models;
 
+import com.codepath.finderapp.database.PinDatabase;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
