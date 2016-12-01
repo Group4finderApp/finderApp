@@ -39,6 +39,7 @@ import com.codepath.finderapp.fragments.CameraFragment;
 import com.codepath.finderapp.fragments.HomeMapFragment;
 import com.codepath.finderapp.fragments.SaveCaptionFragment;
 import com.codepath.finderapp.models.PicturePost;
+import com.codepath.finderapp.utils.AppUtils;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.common.ConnectionResult;
@@ -267,6 +268,9 @@ public class MainActivity extends AppCompatActivity implements
                 i = new Intent(this, ImagesActivity.class);
                 i.putExtra("type", ImagesActivity.ALBUM_VIEW);
                 break;
+            case R.id.invite_button:
+                AppUtils.SendInvite(this);
+                break;
             case R.id.logout:
                 onLogout();
                 break;
@@ -291,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements
         // close this user's session
         LoginManager.getInstance().logOut();
         // Go to the login view
-        Intent intent = new Intent(this, DispatchActivity.class);
+        Intent intent = new Intent(this, WelcomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
