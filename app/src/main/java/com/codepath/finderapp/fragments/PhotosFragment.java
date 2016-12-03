@@ -19,6 +19,7 @@ import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.ImagesAdapter;
 import com.codepath.finderapp.models.ImageAlbum;
 import com.codepath.finderapp.models.PicturePost;
+import com.codepath.finderapp.models.PicturePostCollection;
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -49,7 +50,7 @@ public class PhotosFragment extends Fragment {
 
 
     public interface ImagesListener {
-        void onImageClick(PicturePost picPost, int type);
+        void onImageClick(PicturePostCollection picPosts, int position);
     }
 
     @Override
@@ -161,7 +162,7 @@ public class PhotosFragment extends Fragment {
                             public void onItemClick(View view, int position, int type) {
                                 if(type == 0) {
                                     Toast.makeText(getActivity(), "Image clicked", Toast.LENGTH_SHORT).show();
-                                    sendRequestToActivity (myPhotos.get(position), type);
+                                    sendRequestToActivity (new PicturePostCollection(myPhotos), position);
                                 }
                             }
 
@@ -182,9 +183,9 @@ public class PhotosFragment extends Fragment {
 
     }
 
-    public void sendRequestToActivity (PicturePost picPost, int type) {
+    public void sendRequestToActivity (PicturePostCollection picPosts, int position) {
         //Pass click request to activity
         ImagesListener listener = (ImagesListener) getActivity();
-        listener.onImageClick(picPost, type);
+        listener.onImageClick(picPosts, position);
     }
 }
