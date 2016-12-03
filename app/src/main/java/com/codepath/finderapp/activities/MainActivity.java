@@ -116,7 +116,10 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        String locationFromNotif = getIntent().getStringExtra("locationNotif");
         setContentView(R.layout.activity_main);
         Fabric.with(this, new Crashlytics());
         ButterKnife.bind(this);
@@ -167,6 +170,19 @@ public class MainActivity extends AppCompatActivity implements
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .build();
+
+        // Push notification opening the app
+        if (locationFromNotif != null){
+            HomeMapFragment mapFragment = (HomeMapFragment) getSupportFragmentManager()
+                    .findFragmentByTag("android:switcher:" + R.id.activity_main_view_pager + ":" +
+                            viewPager.getCurrentItem());
+
+            try {
+                mapFragment.moveToSearchLocation(locationFromNotif);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 
@@ -417,6 +433,7 @@ public class MainActivity extends AppCompatActivity implements
                                 HashMap<String, String> test = new HashMap<>();
                                 test.put("message", "testing");
                                 test.put("customData", post.getUser().getUsername());
+                                test.put("locationNotif", post.getLocation().toString());
                                 ParseCloud.callFunctionInBackground("pushChannelTest", test);
 
                             } else {
