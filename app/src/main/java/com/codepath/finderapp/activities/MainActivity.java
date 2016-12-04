@@ -114,6 +114,8 @@ public class MainActivity extends AppCompatActivity implements
     // Stores the current instantiation of the location client in this object
     private GoogleApiClient locationClient;
 
+    private String locationFromNotifPrivate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -171,18 +173,7 @@ public class MainActivity extends AppCompatActivity implements
                 .addConnectionCallbacks(this)
                 .build();
 
-        // Push notification opening the app
-        if (locationFromNotif != null){
-            HomeMapFragment mapFragment = (HomeMapFragment) getSupportFragmentManager()
-                    .findFragmentByTag("android:switcher:" + R.id.activity_main_view_pager + ":" +
-                            viewPager.getCurrentItem());
-
-            try {
-                mapFragment.moveToSearchLocation(locationFromNotif);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        locationFromNotifPrivate = locationFromNotif;
 
     }
 
@@ -205,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements
                                     viewPager.getCurrentItem());
                     try {
                         mapFragment.moveToSearchLocation(query);
+                        locationFromNotifPrivate = "";
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -332,6 +324,18 @@ public class MainActivity extends AppCompatActivity implements
                 case 0:
                     toolbarContainer.setVisibility(View.VISIBLE);
                     cameraFragment.onPause();
+                    // Push notification opening the app
+                    if (locationFromNotifPrivate != null){
+                        HomeMapFragment mapFragment = (HomeMapFragment) getSupportFragmentManager()
+                                .findFragmentByTag("android:switcher:" + R.id.activity_main_view_pager + ":" +
+                                        "0");
+
+                        try {
+                            mapFragment.moveToSearchLocation(locationFromNotifPrivate);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     break;
                 default:
                     toolbarContainer.setVisibility(View.INVISIBLE);
