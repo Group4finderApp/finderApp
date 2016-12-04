@@ -155,7 +155,7 @@ public class PhotosFragment extends Fragment {
                         // Attach the adapter to the recyclerview to populate items
                         rvPhotos.setAdapter(imageAdapter);
                         // Set layout manager to position the items
-                        rvPhotos.setLayoutManager(new GridLayoutManager(getActivity(), 4));
+                        rvPhotos.setLayoutManager(new GridLayoutManager(getActivity(), 3));
                         //add click listener to adapter
                         imageAdapter.setOnItemClickListener(new ImagesAdapter.OnItemClickListener() {
                             @Override
