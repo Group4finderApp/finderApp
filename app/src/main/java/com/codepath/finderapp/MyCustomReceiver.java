@@ -43,9 +43,9 @@ public class MyCustomReceiver extends BroadcastReceiver {
                 if (value != null){
                     String location = json.getString("locationNotif");
                     String currentUser = ParseUser.getCurrentUser().getUsername();
-                    if (!value.equalsIgnoreCase(currentUser)) {
+                    //if (!value.equalsIgnoreCase(currentUser)) {
                         createNotification(context, value, location);
-                    }
+                    //}
                 }
                 /*
                 // Iterate the parse keys if needed
