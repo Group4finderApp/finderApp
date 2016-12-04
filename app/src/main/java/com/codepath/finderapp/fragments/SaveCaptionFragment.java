@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.activities.MainActivity;
 import com.codepath.finderapp.models.PicturePost;
-import com.codepath.finderapp.models.User;
 import com.parse.ParseACL;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
@@ -32,9 +30,10 @@ import com.parse.ParseUser;
  */
 public class SaveCaptionFragment extends DialogFragment {
 
-    private Button saveButton;
+    private ImageButton saveButton;
     private ImageView bgImage;
     private ImageButton thumbsUpButton;
+    private ImageButton formatText;
     private boolean isThumbsUp = false;
     static private Bitmap bmBackground;
 
@@ -78,7 +77,15 @@ public class SaveCaptionFragment extends DialogFragment {
                              Bundle SavedInstanceState) {
 
         //getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        //getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
+        View decorView = getDialog().getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+
+        getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         View v = inflater.inflate(R.layout.fragment_save_caption, parent, false);
 
         bgImage = (ImageView) v.findViewById(R.id.bgImage);
@@ -87,7 +94,7 @@ public class SaveCaptionFragment extends DialogFragment {
 
         caption = ((EditText) v.findViewById(R.id.etCaption));
 
-        saveButton = ((Button) v.findViewById(R.id.btnSave));
+        saveButton = ((ImageButton) v.findViewById(R.id.btnSave));
         saveButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -135,11 +142,29 @@ public class SaveCaptionFragment extends DialogFragment {
 
             }
         });
+
+        formatText = (ImageButton) v.findViewById(R.id.imageFormatText);
+        formatText.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                caption.setVisibility(View.VISIBLE);
+                getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+
+
+            }
+        });
         return v;
     }
 
     @Override
     public void onResume() {
+        View decorView = getDialog().getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+
         // Store access variables for window and blank point
         Window window = getDialog().getWindow();
         Point size = new Point();

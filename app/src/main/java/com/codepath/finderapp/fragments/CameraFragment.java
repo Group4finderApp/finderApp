@@ -25,7 +25,7 @@ import java.io.ByteArrayOutputStream;
 public class CameraFragment extends Fragment {
     public static final String TAG = "CameraFragment";
 
-    private int rotation = 90;
+    private int rotation = 270;
     private static ImageButton photoButton;
 
 
