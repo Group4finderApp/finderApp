@@ -2,7 +2,6 @@ package com.codepath.finderapp.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,9 +10,9 @@ import android.view.MenuItem;
 
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.fragments.AlbumFragment;
+import com.codepath.finderapp.fragments.PhotoScrollFragment;
 import com.codepath.finderapp.fragments.PhotosFragment;
-import com.codepath.finderapp.fragments.SinglePhotoDialogFragment;
-import com.codepath.finderapp.models.PicturePost;
+import com.codepath.finderapp.models.PicturePostCollection;
 
 /**
  * Created by phoen on 11/17/2016.
@@ -24,6 +23,7 @@ public class ImagesActivity extends AppCompatActivity
     public static int PHOTOS_VIEW = 0;
     public static int ALBUM_VIEW = 1;
     Toolbar toolbar;
+    FragmentTransaction ft;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +40,7 @@ public class ImagesActivity extends AppCompatActivity
 
         if (savedInstanceState == null) {
             //Display user fragment
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft = getSupportFragmentManager().beginTransaction();
             if (getIntent().getIntExtra("type", PHOTOS_VIEW) == PHOTOS_VIEW) {
                 Fragment photosFragment = PhotosFragment.newInstance();
                 ft.replace(R.id.flContainer, photosFragment);
@@ -71,7 +71,7 @@ public class ImagesActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
         }
     }
-
+/**
     //Listener for Images Fragments
     @Override
     public void onImageClick(PicturePost picPost, int type) {
@@ -79,5 +79,15 @@ public class ImagesActivity extends AppCompatActivity
         SinglePhotoDialogFragment frag = SinglePhotoDialogFragment
                 .newInstance(picPost);
         frag.show(fm, "singlephotofragment");
+    }
+ **/
+
+    //Listener for Images Fragments
+    @Override
+    public void onImageClick(PicturePostCollection picPosts, int position) {
+        ft = getSupportFragmentManager().beginTransaction();
+        Fragment photoScrollFragment = PhotoScrollFragment.newInstance(picPosts, position);
+        ft.replace(R.id.flContainer, photoScrollFragment);
+        ft.commit();
     }
 }

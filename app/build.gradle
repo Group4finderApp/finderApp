@@ -56,5 +56,5 @@ dependencies {
     compile 'org.parceler:parceler-api:1.1.1'
     apt 'org.parceler:parceler:1.1.1'
     compile 'com.bignerdranch.android:recyclerview-multiselect:0.2'
-
+    compile 'com.ToxicBakery.viewpager.transforms:view-pager-transforms:1.2.32@aar'
 }
