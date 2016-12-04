@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.location.Location;
@@ -60,6 +61,7 @@ import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.fabric.sdk.android.Fabric;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
@@ -74,6 +76,10 @@ public class MainActivity extends AppCompatActivity implements
     ViewPager viewPager;
     @BindView(R.id.activity_main_tab)
     TabLayout tab;
+    @BindView(R.id.bottom_bar_map)
+    ImageView bottomBarMap;
+    @BindView(R.id.bottom_bar_camera)
+    ImageView bottomBarCam;
 
 
     private HomeViewPagerAdapter adapter;
@@ -316,10 +322,14 @@ public class MainActivity extends AppCompatActivity implements
                 case 0:
                     toolbarContainer.setVisibility(View.VISIBLE);
                     cameraFragment.onPause();
+                    bottomBarMap.setColorFilter(Color.parseColor("#3FBE37"));
+                    bottomBarCam.setColorFilter(Color.parseColor("#BCBCBC"));
                     break;
                 default:
                     toolbarContainer.setVisibility(View.INVISIBLE);
                     cameraFragment.onResume();
+                    bottomBarCam.setColorFilter(Color.parseColor("#3FBE37"));
+                    bottomBarMap.setColorFilter(Color.parseColor("#BCBCBC"));
                     break;
             }
         }
@@ -522,6 +532,28 @@ public class MainActivity extends AppCompatActivity implements
         super.onResume();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, new IntentFilter(MyCustomReceiver.intentAction));
+    }
+
+    @OnClick(R.id.bottom_bar_map)
+    public void onClickMap() {
+        int pos = viewPager.getCurrentItem();
+        if(pos == 0) {
+            return;
+        }
+        viewPager.setCurrentItem(0, true);
+        bottomBarMap.setColorFilter(Color.parseColor("#3FBE37"));
+        bottomBarCam.setColorFilter(Color.parseColor("#BCBCBC"));
+    }
+
+    @OnClick(R.id.bottom_bar_camera)
+    public void onClickCam() {
+        int pos = viewPager.getCurrentItem();
+        if(pos == 1) {
+            return;
+        }
+        viewPager.setCurrentItem(1, true);
+        bottomBarCam.setColorFilter(Color.parseColor("#3FBE37"));
+        bottomBarMap.setColorFilter(Color.parseColor("#BCBCBC"));
     }
 }
 

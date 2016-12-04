@@ -570,6 +570,8 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 //        MapUtils.dropPinEffect(marker);
 //        postToMarkers.put(post, marker);
 //        moveCamera(lastLocation);
+        LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
+        fetchDataAfterZoom(bounds, -1);
 
         ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
         ParseGeoPoint currentLocation = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
