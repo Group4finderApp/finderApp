@@ -569,7 +569,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 //        Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
 //        MapUtils.dropPinEffect(marker);
 //        postToMarkers.put(post, marker);
-        moveCamera(lastLocation);
+//        moveCamera(lastLocation);
 
         ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
         ParseGeoPoint currentLocation = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
