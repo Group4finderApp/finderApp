@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.ToxicBakery.viewpager.transforms.ForegroundToBackgroundTransformer;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.PhotoScrollPagerAdapter;
 import com.codepath.finderapp.models.PicturePost;
@@ -72,7 +73,8 @@ public class PhotoScrollFragment extends Fragment {
     private void setupViewPager () {
         photosViewPager.setAdapter(new PhotoScrollPagerAdapter(getActivity(), myPhotos));
         photosViewPager.setClipToPadding(false);
-        photosViewPager.setPageMargin(4);
+        photosViewPager.setPageMargin(0);
+        photosViewPager.setPageTransformer(true, new ForegroundToBackgroundTransformer());
         photosViewPager.setCurrentItem(getArguments().getInt(startIndexKey));
         photosViewPager.addOnPageChangeListener(picListener);
     }
@@ -143,9 +145,11 @@ public class PhotoScrollFragment extends Fragment {
         if (selected) {
             //add padding to highlight
             v.setPadding(5, 5, 5, 5);
+            v.setElevation(8);
             v.setBackgroundColor(Color.MAGENTA);
         } else {
-            v.setPadding(1, 1, 1, 1);
+            v.setPadding(0, 0, 0, 0);
+            v.setElevation(0);
             v.setBackgroundColor(Color.WHITE);
         }
     }
