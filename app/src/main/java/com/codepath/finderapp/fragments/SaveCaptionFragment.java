@@ -18,17 +18,24 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.codepath.finderapp.OnSwipeTouchListener;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.activities.MainActivity;
 import com.codepath.finderapp.models.PicturePost;
 import com.parse.ParseACL;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
+import com.zomato.photofilters.SampleFilters;
+import com.zomato.photofilters.imageprocessors.Filter;
 
 /**
  * Created by chmanish on 11/13/16.
  */
 public class SaveCaptionFragment extends DialogFragment {
+
+    static {
+        System.loadLibrary("NativeImageProcessor");
+    }
 
     private ImageButton saveButton;
     private ImageView bgImage;
@@ -36,6 +43,7 @@ public class SaveCaptionFragment extends DialogFragment {
     private ImageButton formatText;
     private boolean isThumbsUp = false;
     static private Bitmap bmBackground;
+    public static int filterNum = 0;
 
     private TextView caption;
 
@@ -76,13 +84,11 @@ public class SaveCaptionFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                              Bundle SavedInstanceState) {
 
-        //getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        //getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
-        View decorView = getDialog().getWindow().getDecorView();
+        /*View decorView = getDialog().getWindow().getDecorView();
         // Hide the status bar.
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
+        decorView.setSystemUiVisibility(uiOptions);*/
 
         getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -90,7 +96,7 @@ public class SaveCaptionFragment extends DialogFragment {
 
         bgImage = (ImageView) v.findViewById(R.id.bgImage);
         bgImage.setImageBitmap(bmBackground);
-        bgImage.setAlpha(0.8f);
+        //bgImage.setAlpha(0.8f);
 
         caption = ((EditText) v.findViewById(R.id.etCaption));
 
@@ -133,6 +139,7 @@ public class SaveCaptionFragment extends DialogFragment {
                 if (isThumbsUp == true) {
                     isThumbsUp = false;
                     thumbsUpButton.setImageResource(R.drawable.thumb_up_outline_white);
+
                 }
                 else {
                     isThumbsUp = true;
@@ -152,6 +159,55 @@ public class SaveCaptionFragment extends DialogFragment {
                 getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
 
+
+            }
+        });
+
+
+        v.setOnTouchListener(new OnSwipeTouchListener(getContext()) {
+            @Override
+            public void onSwipeRight() {
+
+                Bitmap temp = Bitmap.createBitmap(bmBackground);
+                Filter myFilter;
+
+                switch (filterNum) {
+                    case 0:
+                        myFilter = SampleFilters.getBlueMessFilter();
+                        break;
+                    case 1:
+                        myFilter = SampleFilters.getLimeStutterFilter();
+                        break;
+                    case 2:
+                        myFilter = SampleFilters.getNightWhisperFilter();
+                        break;
+                    case 3:
+                        myFilter = SampleFilters.getStarLitFilter();
+                        break;
+                    case 4:
+                        myFilter = SampleFilters.getAweStruckVibeFilter();
+                        break;
+                    case 5:
+                        myFilter = null;
+                        break;
+                    default:
+                        myFilter = null;
+                        break;
+
+
+
+                }
+                filterNum++;
+                filterNum = filterNum % 6;
+
+                if (myFilter != null) {
+                    Bitmap outputImage = myFilter.processFilter(temp);
+                    bgImage.setImageBitmap(outputImage);
+
+                }
+                else {
+                    bgImage.setImageBitmap(bmBackground);
+                }
 
             }
         });

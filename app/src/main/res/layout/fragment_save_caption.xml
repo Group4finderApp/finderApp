@@ -14,7 +14,6 @@
             android:id="@+id/bgImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"/>
 
@@ -28,10 +27,10 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:id="@+id/imageFormatText"
-                android:background="@android:color/transparent"
-                android:src="@drawable/format_text"
+                android:background="@drawable/format_text"
                 android:layout_alignParentTop="true"
                 android:layout_gravity="right"
+                android:layout_marginTop="12dp"
                 android:layout_alignParentEnd="false"
                 android:layout_alignParentRight="true" />
 
@@ -44,6 +43,7 @@
                 android:layout_marginTop="112dp"
                 android:imeOptions="actionDone"
                 android:background="#33000000"
+                android:textSize="30sp"
                 android:cursorVisible="false"
                 android:visibility="invisible"
                 android:hint="@string/compose_hint"
@@ -54,39 +54,34 @@
                 android:textColorHint="#D3D3D3"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentStart="true" />
-
-
-
-
         </RelativeLayout>
     </FrameLayout>
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#FFF">
+        android:background="#FFF"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/thumbs_up_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="290dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/thumb_up_outline_white"
+            />
         <ImageButton
             android:id="@+id/btnSave"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:backgroundTint="#1DA1F3"
-            android:background="#1DA1F3"
-            android:src="@drawable/ic_send_white_48dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="16dp"
-            android:layout_alignParentEnd="true" />
-        <ImageButton
-            android:id="@+id/thumbs_up_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginLeft="10dp"
-            android:layout_marginBottom="16dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/thumb_up_outline_white"
-            android:layout_alignBottom="@+id/btnSave"
-            android:layout_alignParentStart="true" />
+            android:layout_height="48dp"
+            android:gravity="end"
+            android:background="@drawable/ic_save_image"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+             />
 
-    </RelativeLayout>
+
+    </LinearLayout>
 </LinearLayout>
