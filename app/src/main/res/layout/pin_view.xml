@@ -6,6 +6,9 @@
     android:orientation="vertical">
 
     <ImageView
+        android:paddingTop="14dp"
+        android:paddingLeft="14dp"
+        android:paddingRight="14dp"
         android:src="@color/colorPrimary"
         android:id="@+id/pin_view_image"
         android:layout_width="250dp"

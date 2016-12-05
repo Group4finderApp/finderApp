@@ -315,7 +315,30 @@ public class MainActivity extends AppCompatActivity implements
     ViewPager.OnPageChangeListener toolbarListener = new ViewPager.OnPageChangeListener() {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+            float[] fromHSV = new float[3];
+            float[] toHSV = new float[3];
+            float[] from = new float[3];
+            float[] to = new float[3];
+            Color.colorToHSV(Color.parseColor("#3FBE37"), from);
+            Color.colorToHSV(Color.parseColor("#BCBCBC"), to);
+            fromHSV[0] = from[0] + (to[0] - from[0]) * positionOffset;
+            fromHSV[1] = from[1] + (to[1] - from[1]) * positionOffset;
+            fromHSV[2] = from[2] + (to[2] - from[2]) * positionOffset;
+            toHSV[0] = to[0] + (from[0] - to[0]) * positionOffset;
+            toHSV[1] = to[1] + (from[1] - to[1]) * positionOffset;
+            toHSV[2] = to[2] + (from[2] - to[2]) * positionOffset;
+            switch (position) {
+                case 0 :{
+                    bottomBarMap.setColorFilter(Color.HSVToColor(fromHSV));
+                    bottomBarCam.setColorFilter(Color.HSVToColor(toHSV));
+                    break;
+                }
+                case 1 : {
+                    bottomBarCam.setColorFilter(Color.HSVToColor(fromHSV));
+                    bottomBarMap.setColorFilter(Color.HSVToColor(toHSV));
+                    break;
+                }
+            }
         }
 
         @Override
