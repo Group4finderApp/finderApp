@@ -16,12 +16,14 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.codepath.finderapp.OnSwipeTouchListener;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.activities.MainActivity;
 import com.codepath.finderapp.models.PicturePost;
+import com.codepath.finderapp.utils.AppUtils;
 import com.parse.ParseACL;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
@@ -138,12 +140,16 @@ public class SaveCaptionFragment extends DialogFragment {
             public void onClick(View v) {
                 if (isThumbsUp == true) {
                     isThumbsUp = false;
+                    thumbsUpButton.setLayoutParams(new RelativeLayout.LayoutParams(AppUtils.dpToPixels(48, getContext().getResources()), AppUtils.dpToPixels(48, getContext().getResources())));
                     thumbsUpButton.setImageResource(R.drawable.thumb_up_outline_white);
+
 
                 }
                 else {
                     isThumbsUp = true;
+                    thumbsUpButton.setLayoutParams(new RelativeLayout.LayoutParams(AppUtils.dpToPixels(48, getContext().getResources()), AppUtils.dpToPixels(48, getContext().getResources())));
                     thumbsUpButton.setImageResource(R.drawable.thumb_up);
+
                 }
 
 
