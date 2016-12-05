@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.location.Location;
@@ -120,14 +119,13 @@ public class MainActivity extends AppCompatActivity implements
     // Stores the current instantiation of the location client in this object
     private GoogleApiClient locationClient;
 
-    private String locationFromNotifPrivate;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
-        String locationFromNotif = getIntent().getStringExtra("locationNotif");
+        String locationLat = getIntent().getStringExtra("locationLat");
+        String locationLong = getIntent().getStringExtra("locationLong");
         setContentView(R.layout.activity_main);
         Fabric.with(this, new Crashlytics());
         ButterKnife.bind(this);
@@ -154,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements
 
         post = new PicturePost();
 
-        adapter = new HomeViewPagerAdapter(getSupportFragmentManager(), this);
+        adapter = new HomeViewPagerAdapter(getSupportFragmentManager(), this, locationLat, locationLong);
         //viewPager.setOffscreenPageLimit(1);
         viewPager.setAdapter(adapter);
         //show and hide toolbar
@@ -179,7 +177,6 @@ public class MainActivity extends AppCompatActivity implements
                 .addConnectionCallbacks(this)
                 .build();
 
-        locationFromNotifPrivate = locationFromNotif;
 
     }
 
@@ -202,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements
                                     viewPager.getCurrentItem());
                     try {
                         mapFragment.moveToSearchLocation(query);
-                        locationFromNotifPrivate = "";
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -371,6 +367,7 @@ public class MainActivity extends AppCompatActivity implements
 
         // Connect to the location services client
         locationClient.connect();
+
     }
 
     /*
@@ -435,7 +432,8 @@ public class MainActivity extends AppCompatActivity implements
                                 HashMap<String, String> test = new HashMap<>();
                                 test.put("message", "testing");
                                 test.put("customData", post.getUser().getUsername());
-                                test.put("locationNotif", post.getLocation().toString());
+                                test.put("locationLat", String.valueOf(post.getLocation().getLatitude()));
+                                test.put("locationLong", String.valueOf(post.getLocation().getLongitude()));
                                 ParseCloud.callFunctionInBackground("pushChannelTest", test);
 
                             } else {

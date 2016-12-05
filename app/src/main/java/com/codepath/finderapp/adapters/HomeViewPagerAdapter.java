@@ -24,17 +24,22 @@ public class HomeViewPagerAdapter extends FragmentPagerAdapter {
     private String[] titles = {"MAP", "CAM"};
     private int[] imageResId = {R.drawable.google_maps, R.drawable.camera};
     private Context context;
+    private String locationLat;
+    private String locationLong;
 
-    public HomeViewPagerAdapter(FragmentManager fm, Context context) {
+    public HomeViewPagerAdapter(FragmentManager fm, Context context, String locationLat, String locationLong) {
         super(fm);
         this.context = context;
+        this.locationLat = locationLat;
+        this.locationLong = locationLong;
     }
 
     @Override
     public Fragment getItem(int position) {
         switch (position) {
             case 0: {
-                return new HomeMapFragment();
+                HomeMapFragment newFragment = HomeMapFragment.newInstance(locationLat, locationLong);
+                return newFragment;
             }
             case 1: {
                 return new CameraFragment();

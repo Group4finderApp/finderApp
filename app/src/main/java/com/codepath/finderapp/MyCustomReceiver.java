@@ -41,10 +41,11 @@ public class MyCustomReceiver extends BroadcastReceiver {
                 String key = "customdata";
                 String value = json.getString(key);
                 if (value != null){
-                    String location = json.getString("locationNotif");
+                    String locationLat = json.getString("locationLat");
+                    String locationLong = json.getString("locationLong");
                     String currentUser = ParseUser.getCurrentUser().getUsername();
                     //if (!value.equalsIgnoreCase(currentUser)) {
-                        createNotification(context, value, location);
+                        createNotification(context, value, locationLat, locationLong );
                     //}
                 }
                 /*
@@ -75,9 +76,10 @@ public class MyCustomReceiver extends BroadcastReceiver {
     public static final int NOTIFICATION_ID = 45;
     // Create a local dashboard notification to tell user about the event
     // See: http://guides.codepath.com/android/Notifications
-    private void createNotification(Context context, String datavalue, String location) {
+    private void createNotification(Context context, String datavalue, String locationLat, String locationLong) {
         Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra("locationNotif", location);
+        intent.putExtra("locationLat", locationLat);
+        intent.putExtra("locationLong", locationLong);
         int requestID = (int) System.currentTimeMillis(); //unique requestID to differentiate between various notification with same NotifId
         int flags = PendingIntent.FLAG_CANCEL_CURRENT; // cancel old intent and create new one
         PendingIntent pIntent = PendingIntent.getActivity(context, requestID, intent, flags);
