@@ -55,6 +55,11 @@ public class PicturePost extends ParseObject {
             put("location", value);
         }
 
+        public void addtoAlbum (String albumName) {
+            addUnique("albums", albumName);
+            //put("albums", Arrays.asList(albumName));
+        }
+
         public static ParseQuery<PicturePost> getQuery() {
             return ParseQuery.getQuery(PicturePost.class);
         }

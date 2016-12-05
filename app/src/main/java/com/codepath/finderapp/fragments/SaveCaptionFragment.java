@@ -24,7 +24,6 @@ import com.codepath.finderapp.R;
 import com.codepath.finderapp.activities.MainActivity;
 import com.codepath.finderapp.models.PicturePost;
 import com.codepath.finderapp.utils.AppUtils;
-import com.parse.ParseACL;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 import com.zomato.photofilters.SampleFilters;
@@ -123,12 +122,7 @@ public class SaveCaptionFragment extends DialogFragment {
 
                 ParseUser user = ParseUser.getCurrentUser();
                 post.setUser(user);
-                ParseACL acl = new ParseACL();
-                // Give public read access
-                // TODO: Update ACL
-                acl.setPublicReadAccess(true);
-                acl.setPublicWriteAccess(true);
-                post.setACL(acl);
+                post.setACL(AppUtils.getObjectReadWritePermissions());
 
                 SaveCaptionFragmentDialogListener mListener = (SaveCaptionFragmentDialogListener) getActivity();
                 mListener.onSaveCaption();

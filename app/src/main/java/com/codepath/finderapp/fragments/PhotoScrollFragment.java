@@ -146,7 +146,7 @@ public class PhotoScrollFragment extends Fragment {
             //add padding to highlight
             v.setPadding(5, 5, 5, 5);
             v.setElevation(8);
-            v.setBackgroundColor(Color.MAGENTA);
+            v.setBackgroundColor(getResources().getColor(R.color.colorSelected));
         } else {
             v.setPadding(0, 0, 0, 0);
             v.setElevation(0);
