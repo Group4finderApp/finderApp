@@ -16,8 +16,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
@@ -58,12 +56,10 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -125,6 +121,18 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     private TextView caption;
     private ImageView imageForMarker;
     private static Set<PicturePost> pinList = new HashSet<>();
+
+
+    public static HomeMapFragment newInstance(String locationLat, String locationLong) {
+        HomeMapFragment myFragment = new HomeMapFragment();
+
+        Bundle args = new Bundle();
+        args.putString("locationLat", locationLat);
+
+        args.putString("locationLong", locationLong);
+        myFragment.setArguments(args);
+        return myFragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -444,12 +452,28 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, "connected");
         checkPermission();
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-        if (lastLocation != null) {
-            moveCamera(lastLocation);
-        } else {
-            Toast.makeText(getActivity(), "Location not found", Toast.LENGTH_SHORT).show();
+        String lat = getArguments().getString("locationLat");
+        String longi = getArguments().getString("locationLong");
+        if (lat != null && longi != null){
+            double locationLat = Double.parseDouble(lat);
+            double locationLong = Double.parseDouble(longi);
+            Location myLocation = new Location("aaa");
+            myLocation.setLatitude(locationLat);
+            myLocation.setLongitude(locationLong);
+            moveCamera(myLocation);
+
         }
+        else {
+            lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+            if (lastLocation != null) {
+                moveCamera(lastLocation);
+            } else {
+                Toast.makeText(getActivity(), "Location not found", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
+
         startPeriodUpdates();
     }
 
