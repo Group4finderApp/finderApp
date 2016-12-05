@@ -208,7 +208,7 @@ public class PhotosFragment extends Fragment
         if (!TextUtils.isEmpty(albumName)) {
             ImageAlbum album = new ImageAlbum();
             album.setOwner(ParseUser.getCurrentUser());
-            album.setACL(AppUtils.getObjectReadWritePermissions());
+            //album.setACL(AppUtils.getObjectReadWritePermissions());
             boolean coverSet = false;
             int numPics = 0;
             PicturePost pic;
