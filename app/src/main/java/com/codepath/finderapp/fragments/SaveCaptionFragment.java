@@ -13,30 +13,39 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.codepath.finderapp.OnSwipeTouchListener;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.activities.MainActivity;
 import com.codepath.finderapp.models.PicturePost;
-import com.codepath.finderapp.models.User;
+import com.codepath.finderapp.utils.AppUtils;
 import com.parse.ParseACL;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
+import com.zomato.photofilters.SampleFilters;
+import com.zomato.photofilters.imageprocessors.Filter;
 
 /**
  * Created by chmanish on 11/13/16.
  */
 public class SaveCaptionFragment extends DialogFragment {
 
-    private Button saveButton;
+    static {
+        System.loadLibrary("NativeImageProcessor");
+    }
+
+    private ImageButton saveButton;
     private ImageView bgImage;
     private ImageButton thumbsUpButton;
+    private ImageButton formatText;
     private boolean isThumbsUp = false;
     static private Bitmap bmBackground;
+    public static int filterNum = 0;
 
     private TextView caption;
 
@@ -77,17 +86,23 @@ public class SaveCaptionFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup parent,
                              Bundle SavedInstanceState) {
 
-        //getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
+        /*View decorView = getDialog().getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);*/
+
+        getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         View v = inflater.inflate(R.layout.fragment_save_caption, parent, false);
 
         bgImage = (ImageView) v.findViewById(R.id.bgImage);
         bgImage.setImageBitmap(bmBackground);
-        bgImage.setAlpha(0.8f);
+        //bgImage.setAlpha(0.8f);
 
         caption = ((EditText) v.findViewById(R.id.etCaption));
 
-        saveButton = ((Button) v.findViewById(R.id.btnSave));
+        saveButton = ((ImageButton) v.findViewById(R.id.btnSave));
         saveButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -125,13 +140,80 @@ public class SaveCaptionFragment extends DialogFragment {
             public void onClick(View v) {
                 if (isThumbsUp == true) {
                     isThumbsUp = false;
+                    thumbsUpButton.setLayoutParams(new RelativeLayout.LayoutParams(AppUtils.dpToPixels(48, getContext().getResources()), AppUtils.dpToPixels(48, getContext().getResources())));
                     thumbsUpButton.setImageResource(R.drawable.thumb_up_outline_white);
+
+
                 }
                 else {
                     isThumbsUp = true;
+                    thumbsUpButton.setLayoutParams(new RelativeLayout.LayoutParams(AppUtils.dpToPixels(48, getContext().getResources()), AppUtils.dpToPixels(48, getContext().getResources())));
                     thumbsUpButton.setImageResource(R.drawable.thumb_up);
+
                 }
 
+
+            }
+        });
+
+        formatText = (ImageButton) v.findViewById(R.id.imageFormatText);
+        formatText.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                caption.setVisibility(View.VISIBLE);
+                getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+
+
+            }
+        });
+
+
+        v.setOnTouchListener(new OnSwipeTouchListener(getContext()) {
+            @Override
+            public void onSwipeRight() {
+
+                Bitmap temp = Bitmap.createBitmap(bmBackground);
+                Filter myFilter;
+
+                switch (filterNum) {
+                    case 0:
+                        myFilter = SampleFilters.getBlueMessFilter();
+                        break;
+                    case 1:
+                        myFilter = SampleFilters.getLimeStutterFilter();
+                        break;
+                    case 2:
+                        myFilter = SampleFilters.getNightWhisperFilter();
+                        break;
+                    case 3:
+                        myFilter = SampleFilters.getStarLitFilter();
+                        break;
+                    case 4:
+                        myFilter = SampleFilters.getAweStruckVibeFilter();
+                        break;
+                    case 5:
+                        myFilter = null;
+                        break;
+                    default:
+                        myFilter = null;
+                        break;
+
+
+
+                }
+                filterNum++;
+                filterNum = filterNum % 6;
+
+                if (myFilter != null) {
+                    Bitmap outputImage = myFilter.processFilter(temp);
+                    bgImage.setImageBitmap(outputImage);
+
+                }
+                else {
+                    bgImage.setImageBitmap(bmBackground);
+                }
 
             }
         });
@@ -140,6 +222,11 @@ public class SaveCaptionFragment extends DialogFragment {
 
     @Override
     public void onResume() {
+        View decorView = getDialog().getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+
         // Store access variables for window and blank point
         Window window = getDialog().getWindow();
         Point size = new Point();
