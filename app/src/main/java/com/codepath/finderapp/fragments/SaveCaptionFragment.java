@@ -41,10 +41,10 @@ public class SaveCaptionFragment extends DialogFragment {
 
     private ImageButton saveButton;
     private ImageView bgImage;
-    private ImageView thumbsUpButton;
     private ImageView foodFilter;
     private ImageView sightFilter;
     private boolean isFoodFilter = false;
+    private ImageView thumbsUpButton;
     private ImageButton formatText;
     private boolean isThumbsUp = false;
     static private Bitmap bmBackground;

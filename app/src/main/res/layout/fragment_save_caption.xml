@@ -110,7 +110,6 @@
                 android:layout_marginRight="5dp"
                 android:layout_alignParentEnd="true"
                 />
-
         </RelativeLayout>
 
     </LinearLayout>
