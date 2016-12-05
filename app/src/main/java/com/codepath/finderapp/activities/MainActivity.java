@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements
     // Stores the current instantiation of the location client in this object
     private GoogleApiClient locationClient;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -126,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements
 
         String locationLat = getIntent().getStringExtra("locationLat");
         String locationLong = getIntent().getStringExtra("locationLong");
+
         setContentView(R.layout.activity_main);
         Fabric.with(this, new Crashlytics());
         ButterKnife.bind(this);
@@ -176,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .build();
-
 
     }
 
@@ -434,6 +435,7 @@ public class MainActivity extends AppCompatActivity implements
                                 test.put("customData", post.getUser().getUsername());
                                 test.put("locationLat", String.valueOf(post.getLocation().getLatitude()));
                                 test.put("locationLong", String.valueOf(post.getLocation().getLongitude()));
+
                                 ParseCloud.callFunctionInBackground("pushChannelTest", test);
 
                             } else {

@@ -41,6 +41,7 @@ public class MyCustomReceiver extends BroadcastReceiver {
                 String key = "customdata";
                 String value = json.getString(key);
                 if (value != null){
+
                     String locationLat = json.getString("locationLat");
                     String locationLong = json.getString("locationLong");
                     String currentUser = ParseUser.getCurrentUser().getUsername();
@@ -76,6 +77,7 @@ public class MyCustomReceiver extends BroadcastReceiver {
     public static final int NOTIFICATION_ID = 45;
     // Create a local dashboard notification to tell user about the event
     // See: http://guides.codepath.com/android/Notifications
+
     private void createNotification(Context context, String datavalue, String locationLat, String locationLong) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra("locationLat", locationLat);
