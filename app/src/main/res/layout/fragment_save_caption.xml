@@ -65,14 +65,14 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <ImageButton
+        <ImageView
             android:id="@+id/thumbs_up_button"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
-            android:background="@drawable/thumb_up_outline_white"
+            android:src="@drawable/thumb_up_outline_white"
             android:layout_alignParentStart="true" />
         <ImageButton
             android:id="@+id/btnSave"

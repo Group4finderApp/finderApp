@@ -41,7 +41,7 @@ public class SaveCaptionFragment extends DialogFragment {
 
     private ImageButton saveButton;
     private ImageView bgImage;
-    private ImageButton thumbsUpButton;
+    private ImageView thumbsUpButton;
     private ImageButton formatText;
     private boolean isThumbsUp = false;
     static private Bitmap bmBackground;
@@ -133,21 +133,19 @@ public class SaveCaptionFragment extends DialogFragment {
             }
         });
 
-        thumbsUpButton = (ImageButton) v.findViewById(R.id.thumbs_up_button);
+        thumbsUpButton = (ImageView) v.findViewById(R.id.thumbs_up_button);
         thumbsUpButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 if (isThumbsUp == true) {
                     isThumbsUp = false;
-                    thumbsUpButton.setLayoutParams(new RelativeLayout.LayoutParams(AppUtils.dpToPixels(48, getContext().getResources()), AppUtils.dpToPixels(48, getContext().getResources())));
                     thumbsUpButton.setImageResource(R.drawable.thumb_up_outline_white);
 
 
                 }
                 else {
                     isThumbsUp = true;
-                    thumbsUpButton.setLayoutParams(new RelativeLayout.LayoutParams(AppUtils.dpToPixels(48, getContext().getResources()), AppUtils.dpToPixels(48, getContext().getResources())));
                     thumbsUpButton.setImageResource(R.drawable.thumb_up);
 
                 }
