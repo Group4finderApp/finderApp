@@ -457,19 +457,22 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         if (lat != null && longi != null){
             double locationLat = Double.parseDouble(lat);
             double locationLong = Double.parseDouble(longi);
-            lastLocation.setLatitude(locationLat);
-            lastLocation.setLongitude(locationLong);
+            Location myLocation = new Location("aaa");
+            myLocation.setLatitude(locationLat);
+            myLocation.setLongitude(locationLong);
+            moveCamera(myLocation);
 
         }
         else {
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+            if (lastLocation != null) {
+                moveCamera(lastLocation);
+            } else {
+                Toast.makeText(getActivity(), "Location not found", Toast.LENGTH_SHORT).show();
+            }
 
         }
-        if (lastLocation != null) {
-            moveCamera(lastLocation);
-        } else {
-            Toast.makeText(getActivity(), "Location not found", Toast.LENGTH_SHORT).show();
-        }
+
 
         startPeriodUpdates();
     }
