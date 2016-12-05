@@ -11,5 +11,5 @@
                 />
         </shape>
     </item>
-    <item android:drawable="@drawable/ic_send_white_36dp" />
+    <item android:drawable="@drawable/ic_local_dining_white_36dp" />
 </layer-list>

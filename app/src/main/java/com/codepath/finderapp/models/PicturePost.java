@@ -1,14 +1,15 @@
 package com.codepath.finderapp.models;
 
-import com.codepath.finderapp.database.PinDatabase;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import java.util.Arrays;
+
 import org.parceler.Parcel;
+
+import java.util.Arrays;
 
 /**
  * Data model for a post.
@@ -25,6 +26,10 @@ public class PicturePost extends ParseObject {
         public String getThumbsUp() { return getString("thumbsUp"); }
 
         public void setThumbsUp(String value) { put("thumbsUp", value); }
+
+        public void setFoodFilter(String value) { put("foodFilter", value); }
+
+        public String getFoodFilter() { return getString("foodFilter"); }
 
         public void setText(String value) {
             put("text", value);

@@ -41,6 +41,9 @@ public class SaveCaptionFragment extends DialogFragment {
 
     private ImageButton saveButton;
     private ImageView bgImage;
+    private ImageView foodFilter;
+    private ImageView sightFilter;
+    private boolean isFoodFilter = false;
     private ImageView thumbsUpButton;
     private ImageButton formatText;
     private boolean isThumbsUp = false;
@@ -112,6 +115,7 @@ public class SaveCaptionFragment extends DialogFragment {
                 // Add data to the post object:
                 post.setText(caption.getText().toString());
                 post.setThumbsUp(String.valueOf(isThumbsUp));
+                post.setFoodFilter(String.valueOf(isFoodFilter));
                 Location myLoc = ((MainActivity) getActivity()).getCurrentLocation();
                 ParseGeoPoint geoPoint = new ParseGeoPoint(myLoc.getLatitude(), myLoc.getLongitude());
                 // Set the location to the current user's location
@@ -153,6 +157,55 @@ public class SaveCaptionFragment extends DialogFragment {
 
             }
         });
+
+        foodFilter = (ImageView) v.findViewById(R.id.food_filter);
+
+        foodFilter.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (isFoodFilter == true) {
+                    isFoodFilter = false;
+                    foodFilter.setImageResource(R.drawable.ic_food_filter_grey);
+                    sightFilter.setImageResource(R.drawable.ic_sight_filter);
+
+
+                }
+                else {
+                    isFoodFilter = true;
+                    foodFilter.setImageResource(R.drawable.ic_food_filter);
+                    sightFilter.setImageResource(R.drawable.ic_sight_filter_grey);
+
+                }
+
+
+            }
+        });
+
+        sightFilter = (ImageView) v.findViewById(R.id.sight_filter);
+
+        sightFilter.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (isFoodFilter == true) {
+                    isFoodFilter = false;
+                    sightFilter.setImageResource(R.drawable.ic_sight_filter);
+                    foodFilter.setImageResource(R.drawable.ic_food_filter_grey);
+
+
+                }
+                else {
+                    isFoodFilter = true;
+                    sightFilter.setImageResource(R.drawable.ic_sight_filter_grey);
+                    foodFilter.setImageResource(R.drawable.ic_food_filter);
+
+                }
+
+
+            }
+        });
+
 
         formatText = (ImageButton) v.findViewById(R.id.imageFormatText);
         formatText.setOnClickListener(new View.OnClickListener() {
