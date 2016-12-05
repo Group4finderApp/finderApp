@@ -311,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(intent);
     }
 
-    //Listener for showing / hiding fab
+    //Listener for highlighting selected thumbnail
     ViewPager.OnPageChangeListener toolbarListener = new ViewPager.OnPageChangeListener() {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

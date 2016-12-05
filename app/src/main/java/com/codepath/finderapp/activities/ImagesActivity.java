@@ -12,14 +12,18 @@ import com.codepath.finderapp.R;
 import com.codepath.finderapp.fragments.AlbumFragment;
 import com.codepath.finderapp.fragments.PhotoScrollFragment;
 import com.codepath.finderapp.fragments.PhotosFragment;
+import com.codepath.finderapp.models.PicturePost;
 import com.codepath.finderapp.models.PicturePostCollection;
+
+import java.util.List;
 
 /**
  * Created by phoen on 11/17/2016.
  */
 
 public class ImagesActivity extends AppCompatActivity
-        implements PhotosFragment.ImagesListener{
+        implements PhotosFragment.ImagesListener,
+        AlbumFragment.AlbumListener{
     public static int PHOTOS_VIEW = 0;
     public static int ALBUM_VIEW = 1;
     Toolbar toolbar;
@@ -42,7 +46,7 @@ public class ImagesActivity extends AppCompatActivity
             //Display user fragment
             ft = getSupportFragmentManager().beginTransaction();
             if (getIntent().getIntExtra("type", PHOTOS_VIEW) == PHOTOS_VIEW) {
-                Fragment photosFragment = PhotosFragment.newInstance();
+                Fragment photosFragment = PhotosFragment.newInstance(null);
                 ft.replace(R.id.flContainer, photosFragment);
             } else {
                 Fragment albumsFragment = AlbumFragment.newInstance();
@@ -76,7 +80,7 @@ public class ImagesActivity extends AppCompatActivity
     @Override
     public void onImageClick(PicturePost picPost, int type) {
         FragmentManager fm = getSupportFragmentManager();
-        SinglePhotoDialogFragment frag = SinglePhotoDialogFragment
+        NewAlbumDialogFragment frag = NewAlbumDialogFragment
                 .newInstance(picPost);
         frag.show(fm, "singlephotofragment");
     }
@@ -88,6 +92,15 @@ public class ImagesActivity extends AppCompatActivity
         ft = getSupportFragmentManager().beginTransaction();
         Fragment photoScrollFragment = PhotoScrollFragment.newInstance(picPosts, position);
         ft.replace(R.id.flContainer, photoScrollFragment);
+        ft.commit();
+    }
+
+    @Override
+    public void onAlbumClick(List<PicturePost> posts) {
+        ft = getSupportFragmentManager().beginTransaction();
+        Fragment photosFragment = PhotosFragment
+                .newInstance(new PicturePostCollection(posts));
+        ft.replace(R.id.flContainer, photosFragment);
         ft.commit();
     }
 }

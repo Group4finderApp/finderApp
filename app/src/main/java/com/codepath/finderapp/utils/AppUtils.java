@@ -9,6 +9,7 @@ import android.util.TypedValue;
 
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
+import com.parse.ParseACL;
 
 
 /**
@@ -40,5 +41,14 @@ public class AppUtils {
     public static int dpToPixels(int dp, Resources resources) {
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.getDisplayMetrics());
         return (int) px;
+    }
+
+    public static ParseACL getObjectReadWritePermissions() {
+        ParseACL acl = new ParseACL();
+        // Give public read access
+        // TODO: Update ACL
+        acl.setPublicReadAccess(true);
+        acl.setPublicWriteAccess(true);
+        return acl;
     }
 }
