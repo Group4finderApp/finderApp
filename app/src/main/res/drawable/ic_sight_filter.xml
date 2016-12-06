@@ -6,10 +6,10 @@
             android:shape="oval">
             <solid android:color="#8df"/>
             <size
-                android:width="48dp"
-                android:height="48dp"
+                android:width="36dp"
+                android:height="36dp"
                 />
         </shape>
     </item>
-    <item android:drawable="@drawable/ic_local_see_white_36dp" />
+    <item android:drawable="@drawable/ic_local_see_white_24dp" />
 </layer-list>
