@@ -7,4 +7,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="bottom_bar_selected">#3FBE37</color>
     <color name="bottom_bar_unselected">#BCBCBC</color>
+    <color name="filter_button_color">#0D88F0</color>
 </resources>

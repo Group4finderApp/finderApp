@@ -1,6 +1,8 @@
 package com.codepath.finderapp.fragments;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,13 +17,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorListener;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -110,11 +119,17 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     private static Map<PicturePost, Marker> postToMarkers = new HashMap<>();
     private static AlertDialog.Builder builder;
     private IconGenerator iconGenerator = new IconGenerator(finderAppApplication.getApplication());
+    private boolean filterExpand = false;
+    private float filterContainerWidth;
 
     @BindView(R.id.home_map_wrapper)
     MapWrapperLayout wrapperLayout;
     @BindView(R.id.home_current_loc)
-    ImageButton currentLoc;
+    FloatingActionButton currentLoc;
+    @BindView(R.id.home_filter)
+    FloatingActionButton filterBtn;
+    @BindView(R.id.home_filter_chooser_container)
+    LinearLayout filterChooser;
 
     private ViewGroup infoWindow;
     private ImageView thumbDown;
@@ -170,6 +185,8 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.home_map);
         mapFragment.getMapAsync(this);
 
+        filterContainerWidth = filterChooser.getWidth();
+
         return view;
     }
 
@@ -217,11 +234,10 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                 currentMarker = marker;
                 PicturePost pin = findMatchedPin(marker.getPosition().latitude, marker.getPosition().longitude);
                 try {
-                    if(pin.getUser().fetchIfNeeded().getString("profilePictureUrl") != null) {
+                    if (pin.getUser().fetchIfNeeded().getString("profilePictureUrl") != null) {
 //                        userProfile.setVisibility(View.VISIBLE);
                         Picasso.with(getActivity()).load(pin.getUser().getString("profilePictureUrl")).transform(new CropCircleTransformation()).into(userProfile);
-                    }
-                    else {
+                    } else {
 //                        userProfile.setVisibility(View.INVISIBLE);
                         userProfile.setImageResource(R.drawable.ic_profile_image);
                     }
@@ -231,7 +247,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                 }
                 try {
                     if (clicked.contains(marker)) {
-                        Log.d(TAG,  image + " image width");
+                        Log.d(TAG, image + " image width");
                         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(image.getWidth(), getHeightOfImage(pin.getImage().getData(), image));
                         image.setLayoutParams(params);
                         Log.d(TAG, params.width + " width");
@@ -318,7 +334,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 
     private int getHeightOfImage(byte[] data, View image) {
         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-        int height = (int) (((double)bitmap.getHeight() / bitmap.getWidth()) * image.getWidth());
+        int height = (int) (((double) bitmap.getHeight() / bitmap.getWidth()) * image.getWidth());
         Log.d(TAG, "bit map height : " + bitmap.getHeight());
         Log.d(TAG, "bit map width : " + bitmap.getWidth());
         return height;
@@ -365,7 +381,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
             PicturePost post = iterator.next();
             if (!temp.contains(post)) {
                 iterator.remove();
-                if(postToMarkers.containsKey(post)) {
+                if (postToMarkers.containsKey(post)) {
                     postToMarkers.get(post).remove();
                     postToMarkers.remove(post);
                 }
@@ -376,7 +392,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     private void addPostToListIfNotAvailable(final PicturePost post) {
         pinList.add(post);
         try {
-            if(post.getUser().fetchIfNeeded().getString("profilePictureUrl") != null) {
+            if (post.getUser().fetchIfNeeded().getString("profilePictureUrl") != null) {
                 Picasso.with(getActivity()).load(post.getUser().fetchIfNeeded().getString("profilePictureUrl")).fit().centerCrop().into(imageForMarker, new Callback() {
                     @Override
                     public void onSuccess() {
@@ -391,8 +407,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                         Log.d(TAG, "load error");
                     }
                 });
-            }
-            else {
+            } else {
                 imageForMarker.setImageResource(R.drawable.ic_profile_image);
                 Bitmap icon = iconGenerator.makeIcon();
                 Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
@@ -558,7 +573,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     public void onInfoWindowClick(Marker marker) {
         Log.d(TAG, "info window");
 //        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + marker.getPosition().latitude + "," + marker.getPosition().longitude);
-        String url = "http://maps.google.com/maps?saddr=" + lastLocation.getLatitude() +"," + lastLocation.getLongitude() +"&daddr=" + marker.getPosition().latitude +"," + marker.getPosition().longitude;
+        String url = "http://maps.google.com/maps?saddr=" + lastLocation.getLatitude() + "," + lastLocation.getLongitude() + "&daddr=" + marker.getPosition().latitude + "," + marker.getPosition().longitude;
 //        Uri gmmIntentUri = Uri.parse(url);
 //        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
 //        mapIntent.setPackage("com.google.android.apps.maps");
@@ -634,5 +649,55 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     @OnClick(R.id.home_current_loc)
     public void onCurrentLocClick() {
         moveCamera(lastLocation);
+    }
+
+    @OnClick(R.id.home_filter)
+    public void onFilterClick() {
+        Log.d(TAG, filterChooser.getPivotX() + " pivotX");
+        Log.d(TAG, filterChooser.getWidth() + " width");
+        filterChooser.setPivotX(filterChooser.getWidth());
+        if (filterExpand) {
+            ViewCompat.animate(filterChooser)
+                    .alpha(0)
+                    .setDuration(300)
+                    .setListener(new ViewPropertyAnimatorListener() {
+                        @Override
+                        public void onAnimationStart(View view) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(View view) {
+                            filterChooser.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(View view) {
+
+                        }
+                    });
+        } else {
+            ViewCompat.animate(filterChooser)
+                    .alpha(1)
+                    .setDuration(300)
+                    .setListener(new ViewPropertyAnimatorListener() {
+                        @Override
+                        public void onAnimationStart(View view) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(View view) {
+                            filterChooser.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(View view) {
+
+                        }
+                    });
+
+        }
+        filterExpand = !filterExpand;
     }
 }
