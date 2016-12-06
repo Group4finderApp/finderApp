@@ -90,7 +90,6 @@
                 android:layout_width="36dp"
                 android:layout_marginLeft="5dp"
                 android:layout_height="36dp"
-
                 android:src="@drawable/ic_sight_filter_grey"
                 />
             </LinearLayout>
