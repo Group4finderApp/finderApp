@@ -1,6 +1,5 @@
 package com.codepath.finderapp.fragments;
 
-import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.location.Location;
@@ -16,7 +15,6 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.codepath.finderapp.OnSwipeTouchListener;
@@ -68,20 +66,11 @@ public class SaveCaptionFragment extends DialogFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        Dialog d = getDialog();
-        if (d!=null){
-            int width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int height = ViewGroup.LayoutParams.MATCH_PARENT;
-            d.getWindow().setLayout(width, height);
-        }
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.SaveFragment);
+
+
     }
 
     @Override
@@ -89,13 +78,10 @@ public class SaveCaptionFragment extends DialogFragment {
                              Bundle SavedInstanceState) {
 
 
-        /*View decorView = getDialog().getWindow().getDecorView();
-        // Hide the status bar.
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);*/
-
-        getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        WindowManager.LayoutParams attrs = getDialog().getWindow().getAttributes();
+        attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        getDialog().getWindow().setAttributes(attrs);
+        
         View v = inflater.inflate(R.layout.fragment_save_caption, parent, false);
 
         bgImage = (ImageView) v.findViewById(R.id.bgImage);
@@ -267,10 +253,6 @@ public class SaveCaptionFragment extends DialogFragment {
 
     @Override
     public void onResume() {
-        View decorView = getDialog().getWindow().getDecorView();
-        // Hide the status bar.
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        decorView.setSystemUiVisibility(uiOptions);
 
         // Store access variables for window and blank point
         Window window = getDialog().getWindow();
