@@ -29,7 +29,7 @@ public class AppUtils {
 
     public static void SendInvite(Context context) {
         String appLinkUrl = "https://fb.me/161679120966718";
-        String previewImageUrl = "https://i.imgur.com/XgxWfyF.png";
+        String previewImageUrl = "http://i65.tinypic.com/vshmpw.jpg";
         if (AppInviteDialog.canShow()) {
             AppInviteContent content = new AppInviteContent.Builder()
                     .setApplinkUrl(appLinkUrl)

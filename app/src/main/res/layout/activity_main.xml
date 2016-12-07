@@ -73,7 +73,8 @@
         android:layout_gravity="start"
         android:background="@android:color/white"
         app:headerLayout="@layout/profile_view"
-        app:menu="@menu/activity_main_menu" />
+        app:menu="@menu/activity_main_menu"
+         />
 </android.support.v4.widget.DrawerLayout>
 
 
