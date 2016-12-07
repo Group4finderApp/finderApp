@@ -1,11 +1,14 @@
 package com.codepath.finderapp.fragments;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -15,19 +18,27 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorListener;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.PinAdapter;
 import com.codepath.finderapp.common.Constants;
@@ -95,6 +106,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     private static final double ZOOM_LEVEL_THREHOLD = 0.2;
     private static final double maxRadius = 1;
     private static final double offsetOfPic = 0.46;
+    private static final double offsetOfLat = 0.2;
 
     private SupportMapFragment mapFragment;
     public static GoogleMap map;
@@ -108,18 +120,30 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     private static Map<PicturePost, Marker> postToMarkers = new HashMap<>();
     private static AlertDialog.Builder builder;
     private IconGenerator iconGenerator = new IconGenerator(finderAppApplication.getApplication());
+    private boolean filterExpand = false;
+    private float filterContainerWidth;
+    private boolean filterFood = false;
+    private boolean filterSight = false;
 
     @BindView(R.id.home_map_wrapper)
     MapWrapperLayout wrapperLayout;
     @BindView(R.id.home_current_loc)
-    ImageButton currentLoc;
+    FloatingActionButton currentLoc;
+    @BindView(R.id.home_filter)
+    FloatingActionButton filterBtn;
+    @BindView(R.id.home_filter_chooser_container)
+    LinearLayout filterChooser;
+    @BindView(R.id.home_map_food_filter_btn)
+    ImageView foodFilter;
+    @BindView(R.id.home_map_view_filter_btn)
+    ImageView sightFilter;
 
     private ViewGroup infoWindow;
     private ImageView thumbDown;
     private ImageView userProfile;
     private ImageView image;
     private TextView caption;
-    private ImageView imageForMarker;
+    private static ImageView imageForMarker;
     private static Set<PicturePost> pinList = new HashSet<>();
 
 
@@ -168,6 +192,8 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.home_map);
         mapFragment.getMapAsync(this);
 
+        filterContainerWidth = filterChooser.getWidth();
+
         return view;
     }
 
@@ -191,6 +217,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         pinList.clear();
         clicked.clear();
         postToMarkers.clear();
+        map.clear();
     }
 
     @Override
@@ -214,9 +241,12 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                 currentMarker = marker;
                 PicturePost pin = findMatchedPin(marker.getPosition().latitude, marker.getPosition().longitude);
                 try {
-                    if(pin.getUser().fetchIfNeeded().getString("profilePictureUrl") != null) {
-                        userProfile.setVisibility(View.VISIBLE);
+                    if (pin.getUser().fetchIfNeeded().getString("profilePictureUrl") != null) {
+//                        userProfile.setVisibility(View.VISIBLE);
                         Picasso.with(getActivity()).load(pin.getUser().getString("profilePictureUrl")).transform(new CropCircleTransformation()).into(userProfile);
+                    } else {
+//                        userProfile.setVisibility(View.INVISIBLE);
+                        userProfile.setImageResource(R.drawable.ic_profile_image);
                     }
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -224,7 +254,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                 }
                 try {
                     if (clicked.contains(marker)) {
-                        Log.d(TAG,  image + " image width");
+                        Log.d(TAG, image + " image width");
                         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(image.getWidth(), getHeightOfImage(pin.getImage().getData(), image));
                         image.setLayoutParams(params);
                         Log.d(TAG, params.width + " width");
@@ -277,13 +307,6 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                     thumbDown.setImageResource(R.drawable.thumb_up_outline_white);
                 }
                 caption.setText(pin.getText());
-//                Handler handler = new Handler();
-//                handler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        marker.showInfoWindow();
-//                    }
-//                }, 800);
                 marker.showInfoWindow();
                 LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
                 LatLng moveToPos = getLocationWithOffset(marker, bounds);
@@ -318,7 +341,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 
     private int getHeightOfImage(byte[] data, View image) {
         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-        int height = (int) (((double)bitmap.getHeight() / bitmap.getWidth()) * image.getWidth());
+        int height = (int) (((double) bitmap.getHeight() / bitmap.getWidth()) * image.getWidth());
         Log.d(TAG, "bit map height : " + bitmap.getHeight());
         Log.d(TAG, "bit map width : " + bitmap.getWidth());
         return height;
@@ -331,8 +354,9 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void fetchDataAfterZoom(LatLngBounds bounds, int k) {
+        double southLatitude = bounds.southwest.latitude - (bounds.northeast.latitude - bounds.southwest.latitude) * offsetOfLat > -90.0 ? bounds.southwest.latitude - (bounds.northeast.latitude - bounds.southwest.latitude) * offsetOfLat : -90.0;
         ParseGeoPoint northEast = new ParseGeoPoint(bounds.northeast.latitude, bounds.northeast.longitude);
-        ParseGeoPoint southWest = new ParseGeoPoint(bounds.southwest.latitude, bounds.southwest.longitude);
+        ParseGeoPoint southWest = new ParseGeoPoint(southLatitude, bounds.southwest.longitude);
         ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
         query.whereWithinGeoBox("location", southWest, northEast);
         if (k != -1) {
@@ -345,73 +369,66 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                     Toast.makeText(getActivity(), "server error", Toast.LENGTH_SHORT).show();
                     return;
                 }
-//                boolean found = false;
-//                for(PicturePost post : objects) {
-//                    if(!pinList.contains(post)) {
-//                        found = true;
-//                        break;
-//                    }
-//                }
-//                if(!found) {
-//                    Log.d(TAG, "no change");
-//                    return;
-//                }
-//                map.clear();
-//                pinList.clear();
-//                clicked.clear();
-//                pinList.addAll(objects);
-//                for(PicturePost post : pinList) {
-//                    BitmapDescriptor icon = MapUtils.createBubble(getActivity(), IconGenerator.STYLE_BLUE, "zoomPin");
-//                    Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
-//                    MapUtils.dropPinEffect(marker);
-//                }
+
                 for (final PicturePost post : objects) {
                     if (pinList.contains(post)) {
                         continue;
                     }
-                    pinList.add(post);
-//                    BitmapDescriptor icon = MapUtils.createBubble(getActivity(), IconGenerator.STYLE_BLUE, "zoomPin");
-                    try {
-                        if(post.getUser().fetchIfNeeded().getString("profilePictureUrl") != null) {
-                            Picasso.with(getActivity()).load(post.getUser().fetchIfNeeded().getString("profilePictureUrl")).fit().centerCrop().into(imageForMarker, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    Bitmap icon = iconGenerator.makeIcon();
-                                    Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
-                                    MapUtils.dropPinEffect(marker);
-                                    postToMarkers.put(post, marker);
-                                }
+                    addPostToListIfNotAvailable(post);
+                }
+                removeInvisibleMarker(pinList, objects);
+            }
+        });
+    }
 
-                                @Override
-                                public void onError() {
+    private void removeInvisibleMarker(Set<PicturePost> pinList, List<PicturePost> objects) {
+        Set<PicturePost> temp = new HashSet<>(objects);
+        Iterator<PicturePost> iterator = pinList.iterator();
+        while (iterator.hasNext()) {
+            PicturePost post = iterator.next();
+            if (!temp.contains(post)) {
+                iterator.remove();
+                if (postToMarkers.containsKey(post)) {
+                    postToMarkers.get(post).remove();
+                    postToMarkers.remove(post);
+                }
+            }
+        }
+    }
 
-                                }
-                            });
-                        }
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
-                        imageForMarker.setImageResource(R.drawable.ic_profile_image);
-//                        Picasso.with(getActivity()).load(R.drawable.ic_profile_image).fit().centerCrop().transform(new CropCircleTransformation()).into(imageForMarker);
+    private void addPostToListIfNotAvailable(final PicturePost post) {
+        pinList.add(post);
+        try {
+            if (post.getUser().fetchIfNeeded().getString("profilePictureUrl") != null) {
+                Picasso.with(getActivity()).load(post.getUser().fetchIfNeeded().getString("profilePictureUrl")).fit().centerCrop().into(imageForMarker, new Callback() {
+                    @Override
+                    public void onSuccess() {
                         Bitmap icon = iconGenerator.makeIcon();
                         Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
                         MapUtils.dropPinEffect(marker);
                         postToMarkers.put(post, marker);
                     }
 
-                }
-                Iterator<PicturePost> iterator = pinList.iterator();
-                while (iterator.hasNext()) {
-                    PicturePost post = iterator.next();
-                    if (!objects.contains(post)) {
-                        iterator.remove();
-                        if(postToMarkers.containsKey(post)) {
-                            postToMarkers.get(post).remove();
-                            postToMarkers.remove(post);
-                        }
+                    @Override
+                    public void onError() {
+                        Log.d(TAG, "load error");
                     }
-                }
+                });
+            } else {
+                imageForMarker.setImageResource(R.drawable.ic_profile_image);
+                Bitmap icon = iconGenerator.makeIcon();
+                Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+                MapUtils.dropPinEffect(marker);
+                postToMarkers.put(post, marker);
             }
-        });
+        } catch (ParseException e1) {
+            e1.printStackTrace();
+            imageForMarker.setImageResource(R.drawable.ic_profile_image);
+            Bitmap icon = iconGenerator.makeIcon();
+            Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+            MapUtils.dropPinEffect(marker);
+            postToMarkers.put(post, marker);
+        }
     }
 
     private void checkPermission() {
@@ -563,11 +580,14 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     public void onInfoWindowClick(Marker marker) {
         Log.d(TAG, "info window");
 //        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + marker.getPosition().latitude + "," + marker.getPosition().longitude);
-        String url = "http://maps.google.com/maps?saddr=" + lastLocation.getLatitude() +"," + lastLocation.getLongitude() +"&daddr=" + marker.getPosition().latitude +"," + marker.getPosition().longitude;
-        Uri gmmIntentUri = Uri.parse(url);
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        mapIntent.setPackage("com.google.android.apps.maps");
-        startActivity(mapIntent);
+        String url = "http://maps.google.com/maps?saddr=" + lastLocation.getLatitude() + "," + lastLocation.getLongitude() + "&daddr=" + marker.getPosition().latitude + "," + marker.getPosition().longitude;
+//        Uri gmmIntentUri = Uri.parse(url);
+//        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+//        mapIntent.setPackage("com.google.android.apps.maps");
+//        startActivity(mapIntent);
+        LeavingFragment leavingDialog = new LeavingFragment();
+        leavingDialog.setUrl(url);
+        leavingDialog.show(getFragmentManager(), "leaving dialog");
     }
 
     private PicturePost findMatchedPin(double latitude, double longitude) {
@@ -587,15 +607,16 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         if (lastLocation == null) {
             return;
         }
-//        pinList.add(post);
+        pinList.add(post);
         moveCamera(lastLocation);
+
+        addPostToListIfNotAvailable(post);
+
 //        BitmapDescriptor icon = MapUtils.createBubble(finderAppApplication.getApplication().getApplicationContext(), IconGenerator.STYLE_BLUE, "title");
 //        Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
 //        MapUtils.dropPinEffect(marker);
 //        postToMarkers.put(post, marker);
 //        moveCamera(lastLocation);
-        LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
-        fetchDataAfterZoom(bounds, -1);
 
         ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
         ParseGeoPoint currentLocation = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
@@ -635,5 +656,117 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     @OnClick(R.id.home_current_loc)
     public void onCurrentLocClick() {
         moveCamera(lastLocation);
+    }
+
+    @OnClick(R.id.home_filter)
+    public void onFilterClick() {
+        Log.d(TAG, filterChooser.getPivotX() + " pivotX");
+        Log.d(TAG, filterChooser.getWidth() + " width");
+        filterChooser.setPivotX(filterChooser.getWidth());
+        if (filterExpand) {
+            ViewCompat.animate(filterChooser)
+                    .alpha(0)
+                    .setDuration(300)
+                    .setListener(new ViewPropertyAnimatorListener() {
+                        @Override
+                        public void onAnimationStart(View view) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(View view) {
+                            filterChooser.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(View view) {
+
+                        }
+                    });
+        } else {
+            ViewCompat.animate(filterChooser)
+                    .alpha(1)
+                    .setDuration(300)
+                    .setListener(new ViewPropertyAnimatorListener() {
+                        @Override
+                        public void onAnimationStart(View view) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(View view) {
+                            filterChooser.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(View view) {
+
+                        }
+                    });
+
+        }
+        filterExpand = !filterExpand;
+    }
+
+    @OnClick(R.id.home_map_food_filter_btn)
+    public void onFoodFilterClick() {
+        if(!filterFood) {
+            foodFilter.setColorFilter(Color.parseColor("#3FBE37"));
+            sightFilter.setColorFilter(Color.parseColor("#777777"));
+            filterSight = false;
+            fetchDataForFilter(true, false);
+        }
+        else {
+            foodFilter.setColorFilter(Color.parseColor("#777777"));
+            fetchDataForFilter(false, false);
+        }
+        filterFood = !filterFood;
+    }
+
+    @OnClick(R.id.home_map_view_filter_btn)
+    public void onSightFilterClick() {
+        if(!filterSight) {
+            sightFilter.setColorFilter(Color.parseColor("#3FBE37"));
+            foodFilter.setColorFilter(Color.parseColor("#777777"));
+            filterFood = false;
+            fetchDataForFilter(false, true);
+        }
+        else {
+            sightFilter.setColorFilter(Color.parseColor("#777777"));
+            fetchDataForFilter(false, false);
+        }
+        filterSight = !filterSight;
+    }
+
+    private void fetchDataForFilter(boolean filterFood, boolean filterSight) {
+        ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
+        LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
+        Log.d(TAG, bounds.southwest.latitude + ", " + bounds.southwest.longitude);
+        ParseGeoPoint northEast = new ParseGeoPoint(bounds.northeast.latitude, bounds.northeast.longitude);
+        ParseGeoPoint southWest = new ParseGeoPoint(bounds.southwest.latitude, bounds.southwest.longitude);
+        query.whereWithinGeoBox("location", southWest, northEast);
+        if(filterFood) {
+            query.whereEqualTo("foodFilter", "true");
+        }
+        if(filterSight) {
+            query.whereEqualTo("foodFilter", "false");
+        }
+
+        query.findInBackground(new FindCallback<PicturePost>() {
+            @Override
+            public void done(List<PicturePost> objects, ParseException e) {
+                if(e != null) {
+                    Toast.makeText(getActivity(), "server error", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                for(PicturePost post : objects) {
+                    if(pinList.contains(post)) {
+                        continue;
+                    }
+                    addPostToListIfNotAvailable(post);
+                }
+                removeInvisibleMarker(pinList, objects);
+            }
+        });
     }
 }

@@ -17,6 +17,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 /**
  * Make sure you have included the Android Maps Utility library
@@ -42,7 +43,7 @@ public class MapUtils {
     public static ImageView createImageViewForMarker(Context context) {
         ImageView imageView = new ImageView(context);
         imageView.setLayoutParams(new ViewGroup.LayoutParams(AppUtils.dpToPixels(50, context.getResources()), AppUtils.dpToPixels(50, context.getResources())));
-        imageView.setPadding(AppUtils.dpToPixels(2, context.getResources()), AppUtils.dpToPixels(2, context.getResources()), AppUtils.dpToPixels(2, context.getResources()), AppUtils.dpToPixels(2, context.getResources()));
+        imageView.setPadding(AppUtils.dpToPixels(4, context.getResources()), AppUtils.dpToPixels(4, context.getResources()), AppUtils.dpToPixels(4, context.getResources()), AppUtils.dpToPixels(4, context.getResources()));
         return imageView;
     }
 
