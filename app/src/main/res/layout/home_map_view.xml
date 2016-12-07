@@ -27,22 +27,22 @@
             android:id="@+id/home_filter_chooser_container"
             android:visibility="gone"
             android:background="@drawable/filter_chooser"
-            android:layout_marginBottom="23dp"
+            android:layout_marginBottom="16dp"
             android:layout_gravity="bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/home_map_food_filter_btn"
+            <ImageView
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
-                android:text="food"
+                android:id="@+id/home_map_food_filter_btn"
+                android:src="@drawable/food"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <Button
-                android:id="@+id/home_map_view_filter_btn"
+            <ImageView
                 style="@style/Base.Widget.AppCompat.Button.Borderless"
-                android:text="view"
+                android:id="@+id/home_map_view_filter_btn"
+                android:src="@drawable/camera_iris"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>

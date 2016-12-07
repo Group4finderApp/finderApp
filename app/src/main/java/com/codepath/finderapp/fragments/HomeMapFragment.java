@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -121,6 +122,8 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     private IconGenerator iconGenerator = new IconGenerator(finderAppApplication.getApplication());
     private boolean filterExpand = false;
     private float filterContainerWidth;
+    private boolean filterFood = false;
+    private boolean filterSight = false;
 
     @BindView(R.id.home_map_wrapper)
     MapWrapperLayout wrapperLayout;
@@ -130,6 +133,10 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     FloatingActionButton filterBtn;
     @BindView(R.id.home_filter_chooser_container)
     LinearLayout filterChooser;
+    @BindView(R.id.home_map_food_filter_btn)
+    ImageView foodFilter;
+    @BindView(R.id.home_map_view_filter_btn)
+    ImageView sightFilter;
 
     private ViewGroup infoWindow;
     private ImageView thumbDown;
@@ -699,5 +706,67 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 
         }
         filterExpand = !filterExpand;
+    }
+
+    @OnClick(R.id.home_map_food_filter_btn)
+    public void onFoodFilterClick() {
+        if(!filterFood) {
+            foodFilter.setColorFilter(Color.parseColor("#3FBE37"));
+            sightFilter.setColorFilter(Color.parseColor("#777777"));
+            filterSight = false;
+            fetchDataForFilter(true, false);
+        }
+        else {
+            foodFilter.setColorFilter(Color.parseColor("#777777"));
+            fetchDataForFilter(false, false);
+        }
+        filterFood = !filterFood;
+    }
+
+    @OnClick(R.id.home_map_view_filter_btn)
+    public void onSightFilterClick() {
+        if(!filterSight) {
+            sightFilter.setColorFilter(Color.parseColor("#3FBE37"));
+            foodFilter.setColorFilter(Color.parseColor("#777777"));
+            filterFood = false;
+            fetchDataForFilter(false, true);
+        }
+        else {
+            sightFilter.setColorFilter(Color.parseColor("#777777"));
+            fetchDataForFilter(false, false);
+        }
+        filterSight = !filterSight;
+    }
+
+    private void fetchDataForFilter(boolean filterFood, boolean filterSight) {
+        ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
+        LatLngBounds bounds = map.getProjection().getVisibleRegion().latLngBounds;
+        Log.d(TAG, bounds.southwest.latitude + ", " + bounds.southwest.longitude);
+        ParseGeoPoint northEast = new ParseGeoPoint(bounds.northeast.latitude, bounds.northeast.longitude);
+        ParseGeoPoint southWest = new ParseGeoPoint(bounds.southwest.latitude, bounds.southwest.longitude);
+        query.whereWithinGeoBox("location", southWest, northEast);
+        if(filterFood) {
+            query.whereEqualTo("foodFilter", "true");
+        }
+        if(filterSight) {
+            query.whereEqualTo("foodFilter", "false");
+        }
+
+        query.findInBackground(new FindCallback<PicturePost>() {
+            @Override
+            public void done(List<PicturePost> objects, ParseException e) {
+                if(e != null) {
+                    Toast.makeText(getActivity(), "server error", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                for(PicturePost post : objects) {
+                    if(pinList.contains(post)) {
+                        continue;
+                    }
+                    addPostToListIfNotAvailable(post);
+                }
+                removeInvisibleMarker(pinList, objects);
+            }
+        });
     }
 }
