@@ -1,24 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/photos"
-        android:icon="@drawable/ic_photos"
-        android:title="Photos"/>
-
-    <item
-        android:id="@+id/albums"
-        android:icon="@drawable/ic_album"
-        android:title="Albums"/>
-
-    <item
-        android:id="@+id/invite_button"
-        android:icon="@drawable/ic_invite_friends"
-        android:title="Invite Friends"/>
-
-    <item
-        android:id="@+id/logout"
-        android:icon="@drawable/ic_logout"
-        android:title="@string/logout"/>
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:height="0dp"
+    android:id="@+id/menu_main">
 
 </menu>

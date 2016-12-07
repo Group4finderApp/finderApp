@@ -24,10 +24,12 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,7 +64,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.fabric.sdk.android.Fabric;
-import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -92,6 +93,13 @@ public class MainActivity extends AppCompatActivity implements
     private CardView toolbarContainer;
     private NavigationView nvDrawer;
     private ActionBarDrawerToggle drawerToggle;
+
+    //Menu Layouts
+    LinearLayout menuPhotos;
+    LinearLayout menuAlbums;
+    LinearLayout menuaddFriends;
+    LinearLayout menuExplore;
+    LinearLayout menuLogout;
 
     /*
     * Constants for location update parameters
@@ -250,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements
                 .findViewById(R.id.image_profile);
         if (ParseUser.getCurrentUser().getString("profilePictureUrl") != null) {
             Picasso.with(this).load(ParseUser.getCurrentUser().getString("profilePictureUrl"))
-                    .transform(new CropCircleTransformation())
+                    //.transform(new CropCircleTransformation())
                     .into(profilePic);
         }
         //set profile name
@@ -265,9 +273,32 @@ public class MainActivity extends AppCompatActivity implements
                         return true;
                     }
                 });
+
+        Display display = getWindowManager().getDefaultDisplay();
+        int width = display.getWidth();  // deprecated
+        int height = display.getHeight();
+        View x = navigationView.getHeaderView(0);
+        x.setMinimumHeight(height);
+
+        //navigationView.findViewById(R.id.menu_main).setVisibility(View.GONE);
+
+        menuPhotos = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.menu_photos);
+        menuAlbums = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.menu_albums);
+        menuExplore = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.menu_explore);
+        menuLogout = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.menu_logout);
+        menuaddFriends = (LinearLayout) navigationView.getHeaderView(0).findViewById(R.id.menu_add_friends);
+
+        //Set on click listeners
+        menuPhotos.setOnClickListener(menuphotosListener);
+        menuAlbums.setOnClickListener(menualbumsListener);
+        menuExplore.setOnClickListener(menuexploreListener);
+        menuLogout.setOnClickListener(menulogoutListener);
+        menuaddFriends.setOnClickListener(menuaddfriendsListener);
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
+
+        /**
         // Intent for photos/album
         Intent i = null;
         switch (menuItem.getItemId()) {
@@ -298,7 +329,49 @@ public class MainActivity extends AppCompatActivity implements
         setTitle(menuItem.getTitle());
         // Close the navigation drawer
         mDrawer.closeDrawers();
+             **/
     }
+
+    View.OnClickListener menuphotosListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+           Intent i = new Intent(v.getContext(), ImagesActivity.class);
+            i.putExtra("type", ImagesActivity.PHOTOS_VIEW);
+            startActivity(i);
+            mDrawer.closeDrawers();
+        }
+    };
+
+    View.OnClickListener menualbumsListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(v.getContext(), ImagesActivity.class);
+            i.putExtra("type", ImagesActivity.ALBUM_VIEW);
+            startActivity(i);
+            mDrawer.closeDrawers();
+        }
+    };
+
+    View.OnClickListener menuaddfriendsListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            AppUtils.SendInvite(v.getContext());
+        }
+    };
+
+    View.OnClickListener menuexploreListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+        }
+    };
+
+    View.OnClickListener menulogoutListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            onLogout();
+        }
+    };
 
     private void onLogout() {
         // Log the user out

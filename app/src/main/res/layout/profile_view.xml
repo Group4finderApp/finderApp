@@ -1,29 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="150dp"
-    android:background="@color/colorPrimaryDark">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@drawable/gradient_shape">
 
     <TextView
         android:text="myname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/image_profile"
-        android:layout_alignStart="@+id/image_profile"
-        android:layout_alignLeft="@+id/image_profile"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:textSize="16dp"
         android:id="@+id/name_profile"
         android:textColor="@color/cardview_light_background" />
 
     <ImageView
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:src="@drawable/com_facebook_profile_picture_blank_square"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_hometown"
+        android:id="@+id/hometownpin"
+        android:layout_below="@+id/name_profile"
+        android:layout_alignStart="@+id/name_profile"
+        android:layout_alignLeft="@+id/name_profile"
+        android:layout_marginTop="2dp"/>
+
+    <TextView
+        android:text="San Jose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/hometownpin"
+        android:layout_alignBottom="@+id/hometownpin"
+        android:layout_alignTop="@+id/hometownpin"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="4dp"
+        android:textSize="14dp"
+        android:id="@+id/hometown_name"
+        android:textColor="@color/cardview_light_background" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_marginTop="60dp"
+        android:layout_centerHorizontal="true"
         android:id="@+id/image_profile"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp" />
+        android:layout_width="98dp"
+        android:layout_height="98dp"
+        app:civ_border_width="3dp"
+        app:civ_border_color="#FFFFFF"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/hometownpin"
+        android:id="@+id/menu_photos"
+        android:layout_marginTop="40dp"
+        android:padding="24dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_photos"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:text="Photos"
+            android:textSize="17dp"
+            android:layout_marginLeft="24dp"
+            android:gravity="center_vertical"
+            android:textColor="#F3F3F3"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/menu_photos"
+        android:id="@+id/menu_albums"
+        android:paddingBottom="24dp"
+        android:paddingLeft="24dp"
+        android:paddingStart="24dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_album"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:text="Albums"
+            android:textSize="17dp"
+            android:layout_marginLeft="24dp"
+            android:gravity="center_vertical"
+            android:textColor="#F3F3F3"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/menu_albums"
+        android:id="@+id/menu_add_friends"
+        android:paddingBottom="24dp"
+        android:paddingLeft="24dp"
+        android:paddingStart="24dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_invite_friends"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:text="Invite Friends"
+            android:textSize="17dp"
+            android:layout_marginLeft="24dp"
+            android:gravity="center_vertical"
+            android:textColor="#F3F3F3"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/menu_add_friends"
+        android:id="@+id/menu_explore"
+        android:paddingBottom="24dp"
+        android:paddingLeft="24dp"
+        android:paddingStart="24dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_explore"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:text="Explore Nearby"
+            android:textSize="17dp"
+            android:layout_marginLeft="24dp"
+            android:gravity="center_vertical"
+            android:textColor="#F3F3F3"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/menu_explore"
+        android:id="@+id/menu_logout"
+        android:paddingBottom="24dp"
+        android:paddingLeft="24dp"
+        android:paddingStart="24dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_logout"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:text="Logout"
+            android:textSize="17dp"
+            android:layout_marginLeft="24dp"
+            android:gravity="center_vertical"
+            android:textColor="#F3F3F3"/>
+    </LinearLayout>
+
 </RelativeLayout>

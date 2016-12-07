@@ -57,7 +57,6 @@ public class PhotosFragment extends Fragment
     public ModalMultiSelectorCallback mActionModeCallback;
     int i;
 
-
     public interface ImagesListener {
         void onImageClick(PicturePostCollection picPosts, int position);
     }

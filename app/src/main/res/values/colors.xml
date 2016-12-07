@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3f51b5</color>
+    <color name="colorPrimary">#3B5998</color>
+    <color name="colorPrimary2">#3f51b5</color>
     <color name="cardTransparent">#80d7ccc8</color>
-    <color name="colorPrimaryDark">#303f9f</color>
+    <color name="colorPrimaryDark">#3B5998</color>
+    <color name="colorPrimaryDark2">#303f9f</color>
     <color name="colorSelected">#009688</color>
     <color name="colorAccent">#FF4081</color>
     <color name="bottom_bar_selected">#3FBE37</color>
