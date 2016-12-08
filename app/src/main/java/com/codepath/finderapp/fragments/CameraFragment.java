@@ -1,13 +1,16 @@
 package com.codepath.finderapp.fragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -23,6 +26,7 @@ import android.widget.Toast;
 
 import com.codepath.finderapp.CameraPreview;
 import com.codepath.finderapp.R;
+import com.codepath.finderapp.common.Constants;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -189,6 +193,7 @@ public class CameraFragment extends Fragment {
     @OnClick(R.id.choose_btn)
     public void onChooseClick() {
         Log.d("Camera", "upload");
+        checkPermission();
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         startActivityForResult(Intent.createChooser(intent, "choose an app"), 100);
@@ -252,5 +257,14 @@ public class CameraFragment extends Fragment {
             }
         }
         return fileName;
+    }
+
+    private void checkPermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (getActivity().checkSelfPermission(Manifest.permission.MEDIA_CONTENT_CONTROL) != PackageManager.PERMISSION_GRANTED) {
+                String[] perms = {Manifest.permission.MEDIA_CONTENT_CONTROL};
+                requestPermissions(perms, Constants.locationPermission);
+            }
+        }
     }
 }
