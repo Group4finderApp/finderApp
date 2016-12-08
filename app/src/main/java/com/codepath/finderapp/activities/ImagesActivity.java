@@ -69,7 +69,18 @@ public class ImagesActivity extends AppCompatActivity
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case android.R.id.home:
-                this.finish();
+                Fragment frag = getSupportFragmentManager().findFragmentByTag("PHOTO_VIEWPAGER");
+                if (frag != null) {
+                    if (frag instanceof PhotoScrollFragment) {
+                        ft = getSupportFragmentManager().beginTransaction();
+                        Fragment photosFragment = PhotosFragment.newInstance(null);
+                        ft.replace(R.id.flContainer, photosFragment);
+                        ft.commit();
+
+                    }
+                } else {
+                    this.finish();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -91,7 +102,7 @@ public class ImagesActivity extends AppCompatActivity
     public void onImageClick(PicturePostCollection picPosts, int position) {
         ft = getSupportFragmentManager().beginTransaction();
         Fragment photoScrollFragment = PhotoScrollFragment.newInstance(picPosts, position);
-        ft.replace(R.id.flContainer, photoScrollFragment);
+        ft.replace(R.id.flContainer, photoScrollFragment, "PHOTO_VIEWPAGER");
         ft.commit();
     }
 
