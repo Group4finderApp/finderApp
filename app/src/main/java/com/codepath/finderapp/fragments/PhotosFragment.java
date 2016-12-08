@@ -105,8 +105,8 @@ public class PhotosFragment extends Fragment
                                     if (e == null) {
                                         Log.d("DEBUG", "Post deleted");
                                     } else {
-                                        Toast.makeText(getActivity(),"Oops, one or more pictures not deleted",
-                                                Toast.LENGTH_SHORT).show();
+//                                        Toast.makeText(getActivity(),"Oops, one or more pictures not deleted",
+//                                                Toast.LENGTH_SHORT).show();
                                         e.printStackTrace();
                                     }
                                 }
@@ -242,10 +242,10 @@ public class PhotosFragment extends Fragment
                         if (e == null) {
                             Log.d("DEBUG", "album saved");
                         } else {
-                            Toast.makeText(
-                                    getActivity(),
-                                    "Error saving album: " + e.getMessage(),
-                                    Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(
+//                                    getActivity(),
+//                                    "Error saving album: " + e.getMessage(),
+//                                    Toast.LENGTH_SHORT).show();
 
                         }
                     }

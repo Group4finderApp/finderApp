@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -33,6 +34,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ToxicBakery.viewpager.transforms.AccordionTransformer;
+import com.ToxicBakery.viewpager.transforms.CubeInTransformer;
+import com.ToxicBakery.viewpager.transforms.ForegroundToBackgroundTransformer;
+import com.ToxicBakery.viewpager.transforms.RotateUpTransformer;
+import com.ToxicBakery.viewpager.transforms.TabletTransformer;
 import com.codepath.finderapp.MyCustomReceiver;
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.adapters.HomeViewPagerAdapter;
@@ -176,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements
         adapter = new HomeViewPagerAdapter(getSupportFragmentManager(), this, locationLat, locationLong);
         //viewPager.setOffscreenPageLimit(1);
         viewPager.setAdapter(adapter);
+        viewPager.setPageTransformer(true, new ForegroundToBackgroundTransformer());
         //show and hide toolbar
         viewPager.addOnPageChangeListener(toolbarListener);
         tab.setupWithViewPager(viewPager);
@@ -469,8 +476,8 @@ public boolean onCreateOptionsMenu(Menu menu) {
             float[] toHSV = new float[3];
             float[] from = new float[3];
             float[] to = new float[3];
-            Color.colorToHSV(Color.parseColor("#3FBE37"), from);
-            Color.colorToHSV(Color.parseColor("#BCBCBC"), to);
+            Color.colorToHSV(ContextCompat.getColor(MainActivity.this, R.color.bottom_bar_selected), from);
+            Color.colorToHSV(ContextCompat.getColor(MainActivity.this, R.color.bottom_bar_unselected), to);
             fromHSV[0] = from[0] + (to[0] - from[0]) * positionOffset;
             fromHSV[1] = from[1] + (to[1] - from[1]) * positionOffset;
             fromHSV[2] = from[2] + (to[2] - from[2]) * positionOffset;
@@ -500,14 +507,14 @@ public boolean onCreateOptionsMenu(Menu menu) {
                 case 0:
                     toolbarContainer.setVisibility(View.VISIBLE);
                     cameraFragment.onPause();
-                    bottomBarMap.setColorFilter(Color.parseColor("#3FBE37"));
-                    bottomBarCam.setColorFilter(Color.parseColor("#BCBCBC"));
+                    bottomBarMap.setColorFilter(ContextCompat.getColor(MainActivity.this, R.color.bottom_bar_selected));
+                    bottomBarCam.setColorFilter(ContextCompat.getColor(MainActivity.this, R.color.bottom_bar_unselected));
                     break;
                 default:
                     toolbarContainer.setVisibility(View.INVISIBLE);
                     cameraFragment.onResume();
-                    bottomBarCam.setColorFilter(Color.parseColor("#3FBE37"));
-                    bottomBarMap.setColorFilter(Color.parseColor("#BCBCBC"));
+                    bottomBarCam.setColorFilter(ContextCompat.getColor(MainActivity.this, R.color.bottom_bar_selected));
+                    bottomBarMap.setColorFilter(ContextCompat.getColor(MainActivity.this, R.color.bottom_bar_unselected));
                     break;
             }
         }
@@ -570,8 +577,8 @@ public boolean onCreateOptionsMenu(Menu menu) {
     public Location getCurrentLocation(){
         Location myLoc = (currentLocation == null) ? lastLocation : currentLocation;
         if (myLoc == null) {
-            Toast.makeText(MainActivity.this,
-                    "Please try again after your location appears on the map.", Toast.LENGTH_LONG).show();
+//            Toast.makeText(MainActivity.this,
+//                    "Please try again after your location appears on the map.", Toast.LENGTH_LONG).show();
 
         }
         return myLoc;
@@ -591,9 +598,9 @@ public boolean onCreateOptionsMenu(Menu menu) {
         photoFile.saveInBackground(new SaveCallback() {
             public void done(ParseException e) {
                 if (e != null) {
-                    Toast.makeText(getApplicationContext(),
-                            "Error saving picture: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(),
+//                            "Error saving picture: " + e.getMessage(),
+//                            Toast.LENGTH_LONG).show();
 
                 } else {
                     post.setImage(photoFile);
@@ -613,10 +620,10 @@ public boolean onCreateOptionsMenu(Menu menu) {
 
                             } else {
 
-                                Toast.makeText(
-                                        getApplicationContext(),
-                                        "Error saving post: " + e.getMessage(),
-                                        Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(
+//                                        getApplicationContext(),
+//                                        "Error saving post: " + e.getMessage(),
+//                                        Toast.LENGTH_SHORT).show();
 
                             }
                         }
@@ -699,7 +706,7 @@ public boolean onCreateOptionsMenu(Menu menu) {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Toast.makeText(getApplicationContext(), "onReceive invoked!", Toast.LENGTH_LONG).show();
+//            Toast.makeText(getApplicationContext(), "onReceive invoked!", Toast.LENGTH_LONG).show();
         }
     };
 
@@ -723,8 +730,8 @@ public boolean onCreateOptionsMenu(Menu menu) {
             return;
         }
         viewPager.setCurrentItem(0, true);
-        bottomBarMap.setColorFilter(Color.parseColor("#3FBE37"));
-        bottomBarCam.setColorFilter(Color.parseColor("#BCBCBC"));
+        bottomBarMap.setColorFilter(ContextCompat.getColor(this, R.color.bottom_bar_selected));
+        bottomBarCam.setColorFilter(ContextCompat.getColor(this, R.color.bottom_bar_unselected));
     }
 
     @OnClick(R.id.bottom_bar_camera)
@@ -734,8 +741,8 @@ public boolean onCreateOptionsMenu(Menu menu) {
             return;
         }
         viewPager.setCurrentItem(1, true);
-        bottomBarCam.setColorFilter(Color.parseColor("#3FBE37"));
-        bottomBarMap.setColorFilter(Color.parseColor("#BCBCBC"));
+        bottomBarCam.setColorFilter(ContextCompat.getColor(this, R.color.bottom_bar_selected));
+        bottomBarMap.setColorFilter(ContextCompat.getColor(this, R.color.bottom_bar_unselected));
     }
 }
 
