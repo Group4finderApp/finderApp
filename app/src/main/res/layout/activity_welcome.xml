@@ -19,6 +19,16 @@
         android:scaleType="fitXY"
         android:adjustViewBounds="true"/>
 
+        <TextView
+            android:id="@+id/custom_font"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="@color/colorPrimary"
+            android:textSize="40sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp" />
+
         <!--
         <ImageView
             android:id="@+id/pawPrint1"
@@ -95,40 +105,11 @@
         android:background="@color/com_facebook_blue"
         android:layout_width="200dp"
         android:layout_height="50dp"
+        android:textColor="#FFF"
         android:text="@string/facebooklogin"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:id="@+id/textview_1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="52dp"
-        android:text="@string/powered_by"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    <TextView
-        android:id="@+id/textview_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/textview_1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="19dp"
-        android:text="@string/parse"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@+id/textview_3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="23dp"
-        android:text="@string/slogan"
-        android:visibility="invisible"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
     </RelativeLayout>
     </FrameLayout>
 

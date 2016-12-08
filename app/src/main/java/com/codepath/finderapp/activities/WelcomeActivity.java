@@ -7,12 +7,14 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.codepath.finderapp.R;
 import com.codepath.finderapp.network.FacebookGraphClient;
@@ -36,6 +38,12 @@ public class WelcomeActivity extends Activity {
         setContentView(R.layout.activity_welcome);
         //Uri targetUrl = AppLinks.getTargetUrlFromInboundIntent(this, getIntent());
         // Sign up with facebook
+        // Get access to our TextView
+        TextView txt = (TextView) findViewById(R.id.custom_font);
+        // Create the TypeFace from the TTF asset
+        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/BOOKOSB.TTF");
+        // Assign the typeface to the view
+        txt.setTypeface(font);
         playAnimation();
         Button facebookLoginButton = (Button) findViewById(R.id.facebooklogin_button);
         facebookLoginButton.setOnClickListener(new View.OnClickListener() {
