@@ -61,4 +61,5 @@ dependencies {
     compile 'com.ToxicBakery.viewpager.transforms:view-pager-transforms:1.2.32@aar'
     compile 'com.github.zomato:androidphotofilters:1.0.1'
     compile 'de.hdodenhof:circleimageview:2.1.0'
+    compile project(':GooglePlaceAutoComplete')
 }

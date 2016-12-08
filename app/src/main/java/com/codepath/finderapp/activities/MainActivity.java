@@ -1,6 +1,7 @@
 package com.codepath.finderapp.activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,13 +15,11 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,6 +27,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -63,6 +63,7 @@ import java.util.HashMap;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import co.geeksters.googleplaceautocomplete.lib.CustomAutoCompleteTextView;
 import io.fabric.sdk.android.Fabric;
 
 
@@ -93,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements
     private CardView toolbarContainer;
     private NavigationView nvDrawer;
     private ActionBarDrawerToggle drawerToggle;
+    private ImageView ivsearchButton;
+    public CustomAutoCompleteTextView customAutoCompleteTextView;
 
     //Menu Layouts
     LinearLayout menuPhotos;
@@ -142,12 +145,20 @@ public class MainActivity extends AppCompatActivity implements
         //container for toolbar
         toolbarContainer = (CardView) findViewById(R.id.map_toolbar_container);
         // Set a Toolbar to replace the ActionBar.
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         // Remove default title text
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         //change background color of toolbar
         toolbar.setBackgroundColor(Color.WHITE);
+
+        //autocomplete searchview
+        customAutoCompleteTextView = (CustomAutoCompleteTextView)toolbar.findViewById(R.id.atv_places);
+        customAutoCompleteTextView.setOnClickListener(editTextListener);
+        //customAutoCompleteTextView.setOnFocusChangeListener(etfocusListener);
+        //search icon
+        ivsearchButton = (ImageView) toolbar.findViewById(R.id.search_place);
+        ivsearchButton.setOnClickListener(searchplaceListener);
 
         // Find our drawer view
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -188,41 +199,107 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
 
     }
-
+/**
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
+        //customAutoCompleteTextView.setVisibility(View.INVISIBLE);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        //when user clicks the view
+        searchView.setOnClickListener(new SearchView.OnClickListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                // perform query here
-
-                // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
-                // see https://code.google.com/p/android/issues/detail?id=24599
-                if (!TextUtils.isEmpty(query)) {
-                    HomeMapFragment mapFragment = (HomeMapFragment) getSupportFragmentManager()
-                            .findFragmentByTag("android:switcher:" + R.id.activity_main_view_pager + ":" +
-                                    viewPager.getCurrentItem());
-                    try {
-                        mapFragment.moveToSearchLocation(query);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    searchView.clearFocus();
-                }
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
+            public void onClick(View v) {
+                //customAutoCompleteTextView.setVisibility(View.VISIBLE);
             }
         });
-        return super.onCreateOptionsMenu(menu);
+
+        //when user presses search
+    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String query) {
+            String userQuery = customAutoCompleteTextView.googlePlace.getCity();
+            // perform query here
+
+            // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
+            // see https://code.google.com/p/android/issues/detail?id=24599
+            if (!TextUtils.isEmpty(userQuery)) {
+                HomeMapFragment mapFragment = (HomeMapFragment) getSupportFragmentManager()
+                        .findFragmentByTag("android:switcher:" + R.id.activity_main_view_pager + ":" +
+                                viewPager.getCurrentItem());
+                try {
+                    mapFragment.moveToSearchLocation(userQuery);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                searchView.clearFocus();
+            }
+            //customAutoCompleteTextView.setVisibility(View.INVISIBLE);
+            return true;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            return false;
+        }
+    });
+    return super.onCreateOptionsMenu(menu);
+}
+
+**/
+
+//when user presses search
+View.OnClickListener editTextListener = new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        customAutoCompleteTextView.setCursorVisible(true);
     }
+};
+
+    /**
+    View.OnFocusChangeListener etfocusListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (!hasFocus) {
+                InputMethodManager inputMethodManager =
+                        (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            }
+        }
+    };
+     **/
+
+View.OnClickListener searchplaceListener = new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        String userQuery = "";
+        if (customAutoCompleteTextView.googlePlace.getCity() != null) {
+            userQuery = customAutoCompleteTextView.googlePlace.getCity();
+        }
+        if (!TextUtils.isEmpty(userQuery)) {
+            HomeMapFragment mapFragment = (HomeMapFragment) getSupportFragmentManager()
+                    .findFragmentByTag("android:switcher:" + R.id.activity_main_view_pager + ":" +
+                            viewPager.getCurrentItem());
+            try {
+                mapFragment.moveToSearchLocation(userQuery);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            customAutoCompleteTextView.setText("");
+            customAutoCompleteTextView.setCursorVisible(false);
+            InputMethodManager inputMethodManager =
+                    (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+    }
+};
+
+public boolean onCreateOptionsMenu(Menu menu) {
+    // Inflate the menu; this adds items to the action bar if it is present.
+    getMenuInflater().inflate(R.menu.activity_main_menu, menu);
+    return true;
+}
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
