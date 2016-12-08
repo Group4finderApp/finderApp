@@ -1,16 +1,20 @@
 package com.codepath.finderapp.activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.LocalBroadcastManager;
@@ -660,5 +664,6 @@ public class MainActivity extends AppCompatActivity implements
         bottomBarCam.setColorFilter(Color.parseColor("#3FBE37"));
         bottomBarMap.setColorFilter(Color.parseColor("#BCBCBC"));
     }
+
 }
 
