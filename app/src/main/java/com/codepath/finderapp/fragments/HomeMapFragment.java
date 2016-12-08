@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -64,11 +65,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -241,7 +245,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                 currentMarker = marker;
                 PicturePost pin = findMatchedPin(marker.getPosition().latitude, marker.getPosition().longitude);
                 try {
-                    if (pin.getUser().fetchIfNeeded().getString("profilePictureUrl") != null) {
+                    if (pin != null && pin.getUser().fetchIfNeeded().getString("profilePictureUrl") != null) {
 //                        userProfile.setVisibility(View.VISIBLE);
                         Picasso.with(getActivity()).load(pin.getUser().getString("profilePictureUrl")).transform(new CropCircleTransformation()).into(userProfile);
                     } else {
@@ -255,8 +259,10 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                 try {
                     if (clicked.contains(marker)) {
                         Log.d(TAG, image + " image width");
+                        marker.showInfoWindow();
                         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(image.getWidth(), getHeightOfImage(pin.getImage().getData(), image));
                         image.setLayoutParams(params);
+                        marker.showInfoWindow();
                         Log.d(TAG, params.width + " width");
                         Log.d(TAG, params.height + " height");
                         Picasso.with(getActivity()).load(pin.getImage().getFile()).fit().centerCrop().into(image);
@@ -264,9 +270,9 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                         //TODO
                         clicked.add(marker);
                         marker.showInfoWindow();
-                        marker.showInfoWindow();
                         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(image.getWidth(), getHeightOfImage(pin.getImage().getData(), image));
                         image.setLayoutParams(params);
+                        marker.showInfoWindow();
                         Log.d(TAG, params.width + " width");
                         Log.d(TAG, params.height + " height");
                         Picasso.with(getActivity()).load(pin.getImage().getFile()).fit().centerCrop().into(image, new Callback() {
@@ -286,6 +292,28 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                                 Log.d(TAG, "image load fail");
                             }
                         });
+//                        Picasso.with(getActivity()).load(pin.getImage().getFile()).into(new Target() {
+//                            @Override
+//                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//                                image.setImageBitmap(bitmap);
+//                                new Handler().postDelayed(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        currentMarker.showInfoWindow();
+//                                    }
+//                                }, 200);
+//                            }
+//
+//                            @Override
+//                            public void onBitmapFailed(Drawable errorDrawable) {
+//
+//                            }
+//
+//                            @Override
+//                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+//
+//                            }
+//                        });
                     }
 
                 } catch (ParseException e) {
@@ -359,6 +387,12 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         ParseGeoPoint southWest = new ParseGeoPoint(southLatitude, bounds.southwest.longitude);
         ParseQuery<PicturePost> query = ParseQuery.getQuery("Posts");
         query.whereWithinGeoBox("location", southWest, northEast);
+        if(filterFood) {
+            query.whereEqualTo("foodFilter", "true");
+        }
+        if(filterSight) {
+            query.whereEqualTo("foodFilter", "false");
+        }
         if (k != -1) {
             query.setLimit(k);
         }
@@ -398,37 +432,96 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 
     private void addPostToListIfNotAvailable(final PicturePost post) {
         pinList.add(post);
-        try {
-            if (post.getUser().fetchIfNeeded().getString("profilePictureUrl") != null) {
-                Picasso.with(getActivity()).load(post.getUser().fetchIfNeeded().getString("profilePictureUrl")).fit().centerCrop().into(imageForMarker, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        Bitmap icon = iconGenerator.makeIcon();
-                        Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
-                        MapUtils.dropPinEffect(marker);
-                        postToMarkers.put(post, marker);
-                    }
+        post.getUser().fetchIfNeededInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                Log.d(TAG, "fetch user successfully");
+                if(e != null) {
+                    Toast.makeText(getActivity(), "server error " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Log.d(TAG, object.getString("profilePictureUrl"));
+                if(object.getString("profilePictureUrl") != null) {
+//                    Picasso.with(getActivity()).load(object.getString("profilePictureUrl")).fit().centerCrop().into(imageForMarker, new Callback() {
+//                        @Override
+//                        public void onSuccess() {
+//                            Log.d(TAG, "fetch image");
+//                            Bitmap icon = iconGenerator.makeIcon();
+//                            Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+//                            MapUtils.dropPinEffect(marker);
+//                            postToMarkers.put(post, marker);
+//                        }
+//
+//                        @Override
+//                        public void onError() {
+//                            Log.d(TAG, "load error");
+//                        }
+//                    });
+                    Picasso.with(getActivity()).load(object.getString("profilePictureUrl")).into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            Log.d(TAG, "success");
+                            imageForMarker.setImageBitmap(bitmap);
+                            Bitmap icon = iconGenerator.makeIcon();
+                            Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+                            MapUtils.dropPinEffect(marker);
+                            postToMarkers.put(post, marker);
+                        }
 
-                    @Override
-                    public void onError() {
-                        Log.d(TAG, "load error");
-                    }
-                });
-            } else {
-                imageForMarker.setImageResource(R.drawable.ic_profile_image);
-                Bitmap icon = iconGenerator.makeIcon();
-                Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
-                MapUtils.dropPinEffect(marker);
-                postToMarkers.put(post, marker);
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+                            Log.d(TAG, "fail");
+                            imageForMarker.setImageResource(R.drawable.ic_profile_image);
+                            Bitmap icon = iconGenerator.makeIcon();
+                            Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+                            MapUtils.dropPinEffect(marker);
+                            postToMarkers.put(post, marker);
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+                            Log.d(TAG, "prepare");
+//                            imageForMarker.setImageResource(R.drawable.ic_profile_image);
+//                            Bitmap icon = iconGenerator.makeIcon();
+//                            Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+//                            MapUtils.dropPinEffect(marker);
+//                            postToMarkers.put(post, marker);
+                        }
+                    });
+                }
             }
-        } catch (ParseException e1) {
-            e1.printStackTrace();
-            imageForMarker.setImageResource(R.drawable.ic_profile_image);
-            Bitmap icon = iconGenerator.makeIcon();
-            Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
-            MapUtils.dropPinEffect(marker);
-            postToMarkers.put(post, marker);
-        }
+        });
+//        try {
+//            if (post.getUser().fetchIfNeeded().getString("profilePictureUrl") != null) {
+//                Picasso.with(getActivity()).load(post.getUser().getString("profilePictureUrl")).fit().centerCrop().into(imageForMarker, new Callback() {
+//                    @Override
+//                    public void onSuccess() {
+//                        Bitmap icon = iconGenerator.makeIcon();
+//                        Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+//                        MapUtils.dropPinEffect(marker);
+//                        postToMarkers.put(post, marker);
+//                    }
+//
+//                    @Override
+//                    public void onError() {
+//                        Log.d(TAG, "load error");
+//                    }
+//                });
+//            } else {
+//                imageForMarker.setImageResource(R.drawable.ic_profile_image);
+//                Bitmap icon = iconGenerator.makeIcon();
+//                Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+//                MapUtils.dropPinEffect(marker);
+//                postToMarkers.put(post, marker);
+//            }
+//        } catch (ParseException e1) {
+//            e1.printStackTrace();
+//            imageForMarker.setImageResource(R.drawable.ic_profile_image);
+//            Bitmap icon = iconGenerator.makeIcon();
+//            Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
+//            MapUtils.dropPinEffect(marker);
+//            postToMarkers.put(post, marker);
+//        }
     }
 
     private void checkPermission() {
