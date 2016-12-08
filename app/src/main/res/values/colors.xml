@@ -7,7 +7,11 @@
     <color name="colorPrimaryDark2">#303f9f</color>
     <color name="colorSelected">#009688</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="bottom_bar_selected">#3FBE37</color>
+    <!--<color name="bottom_bar_selected">#3FBE37</color>-->
     <color name="bottom_bar_unselected">#BCBCBC</color>
+    <color name="bottom_bar_selected">#0D88F0</color>
     <color name="filter_button_color">#0D88F0</color>
+    <color name="font_color">#979797</color>
+    <color name="icon_selected">#0D88F0</color>
+    <color name="icon_unselected">#777777</color>
 </resources>

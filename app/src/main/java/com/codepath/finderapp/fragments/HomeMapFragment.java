@@ -75,6 +75,7 @@ import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 
 /**
@@ -118,6 +119,9 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     private float filterContainerWidth;
     private boolean filterFood = false;
     private boolean filterSight = false;
+    private boolean first = true;
+    private boolean viewLevelExpand = false;
+    private static int zoomSetting = 10;
 
     @BindView(R.id.home_map_wrapper)
     MapWrapperLayout wrapperLayout;
@@ -131,6 +135,15 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     ImageView foodFilter;
     @BindView(R.id.home_map_view_filter_btn)
     ImageView sightFilter;
+    @BindView(R.id.map_view_level)
+    LinearLayout mapViewLevel;
+    @BindView(R.id.home_map_world_level)
+    TextView worldLevel;
+    @BindView(R.id.home_map_city_level)
+    TextView cityLevel;
+    @BindView(R.id.home_map_street_level)
+    TextView streetLevel;
+
 
     private ViewGroup infoWindow;
     private ImageView thumbDown;
@@ -185,8 +198,6 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.home_map);
         mapFragment.getMapAsync(this);
-
-        filterContainerWidth = filterChooser.getWidth();
 
         return view;
     }
@@ -390,7 +401,6 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
             @Override
             public void done(List<PicturePost> objects, ParseException e) {
                 if (e != null) {
-                    Toast.makeText(getActivity(), "server error", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -427,7 +437,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
             public void done(ParseObject object, ParseException e) {
                 Log.d(TAG, "fetch user successfully");
                 if(e != null) {
-                    Toast.makeText(getActivity(), "server error " + e.getMessage(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getActivity(), "server error " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     return;
                 }
                 Log.d(TAG, object.getString("profilePictureUrl"));
@@ -471,11 +481,6 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                         @Override
                         public void onPrepareLoad(Drawable placeHolderDrawable) {
                             Log.d(TAG, "prepare");
-//                            imageForMarker.setImageResource(R.drawable.ic_profile_image);
-//                            Bitmap icon = iconGenerator.makeIcon();
-//                            Marker marker = MapUtils.addMarker(map, new LatLng(post.getLocation().getLatitude(), post.getLocation().getLongitude()), "", "", icon);
-//                            MapUtils.dropPinEffect(marker);
-//                            postToMarkers.put(post, marker);
                         }
                     });
                 }
@@ -568,7 +573,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
             if (lastLocation != null) {
                 moveCamera(lastLocation);
             } else {
-                Toast.makeText(getActivity(), "Location not found", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), "Location not found", Toast.LENGTH_SHORT).show();
             }
 
         }
@@ -598,7 +603,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 
     private void updateCameraLocation(LatLng latlng) {
 //        map.clear();
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latlng, 15);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latlng, 10);
         map.animateCamera(update, this);
 //        getKNearestPins(latlng.latitude, latlng.longitude, 5);
     }
@@ -620,6 +625,13 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
         updateCameraLocation(new LatLng(location.getLatitude(), location.getLongitude()));
     }
 
+    private void moveCamera(Location location, int zoomLevel) {
+        if (location == null) {
+            return;
+        }
+        updateCameraLocation(new LatLng(location.getLatitude(), location.getLongitude()), zoomLevel);
+    }
+
     public void moveToSearchLocation(String searchString) throws IOException {
         List<Address> searchAddresses = null;
         if (searchString != null && !TextUtils.isEmpty(searchString)) {
@@ -636,8 +648,8 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                 updateCameraLocation(latlng, 10);
                 map.addMarker(new MarkerOptions().position(latlng).title("searchLoc"));
             } else {
-                Toast.makeText(getActivity(), "Oops, something went wrong!!",
-                        Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), "Oops, something went wrong!!",
+//                        Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -738,17 +750,20 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 
     @OnClick(R.id.home_current_loc)
     public void onCurrentLocClick() {
-        moveCamera(lastLocation);
+        if(mapViewLevel.getVisibility() == View.VISIBLE) {
+            mapViewLevel.setVisibility(View.INVISIBLE);
+            viewLevelExpand = false;
+        }
+        moveCamera(lastLocation, zoomSetting);
     }
 
-    @OnClick(R.id.home_filter)
-    public void onFilterClick() {
-        Log.d(TAG, filterChooser.getPivotX() + " pivotX");
-        Log.d(TAG, filterChooser.getWidth() + " width");
-        filterChooser.setPivotX(filterChooser.getWidth());
-        if (filterExpand) {
-            ViewCompat.animate(filterChooser)
-                    .alpha(0)
+    @OnLongClick(R.id.home_current_loc)
+    public boolean onCurrentLocLongClick() {
+        Log.d(TAG, "long click");
+        mapViewLevel.setPivotY(mapViewLevel.getHeight());
+        if(viewLevelExpand) {
+            ViewCompat.animate(mapViewLevel)
+                    .scaleY(0)
                     .setDuration(300)
                     .setListener(new ViewPropertyAnimatorListener() {
                         @Override
@@ -758,7 +773,87 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
 
                         @Override
                         public void onAnimationEnd(View view) {
-                            filterChooser.setVisibility(View.GONE);
+                            mapViewLevel.setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(View view) {
+
+                        }
+                    });
+        }
+        else {
+            ViewCompat.animate(mapViewLevel)
+                    .scaleY(1)
+                    .setDuration(300)
+                    .setListener(new ViewPropertyAnimatorListener() {
+                        @Override
+                        public void onAnimationStart(View view) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(View view) {
+                            mapViewLevel.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(View view) {
+
+                        }
+                    });
+        }
+        viewLevelExpand = !viewLevelExpand;
+        return true;
+    }
+
+    @OnClick(R.id.home_map_world_level)
+    public void onWordLevelSet() {
+        zoomSetting = 1;
+        worldLevel.setTextColor(ContextCompat.getColor(getActivity(), R.color.bottom_bar_selected));
+        cityLevel.setTextColor(ContextCompat.getColor(getActivity(), R.color.font_color));
+        streetLevel.setTextColor(ContextCompat.getColor(getActivity(), R.color.font_color));
+        updateCameraLocation(map.getCameraPosition().target, zoomSetting);
+    }
+
+    @OnClick(R.id.home_map_city_level)
+    public void onCityLevelSet() {
+        zoomSetting = 10;
+        worldLevel.setTextColor(ContextCompat.getColor(getActivity(), R.color.font_color));
+        cityLevel.setTextColor(ContextCompat.getColor(getActivity(), R.color.bottom_bar_selected));
+        streetLevel.setTextColor(ContextCompat.getColor(getActivity(), R.color.font_color));
+        updateCameraLocation(map.getCameraPosition().target, zoomSetting);
+    }
+
+    @OnClick(R.id.home_map_street_level)
+    public void onStreetLevelSet() {
+        zoomSetting = 15;
+        worldLevel.setTextColor(ContextCompat.getColor(getActivity(), R.color.font_color));
+        cityLevel.setTextColor(ContextCompat.getColor(getActivity(), R.color.font_color));
+        streetLevel.setTextColor(ContextCompat.getColor(getActivity(), R.color.bottom_bar_selected));
+        updateCameraLocation(map.getCameraPosition().target, zoomSetting);
+    }
+
+    @OnClick(R.id.home_filter)
+    public void onFilterClick() {
+        Log.d(TAG, filterChooser.getPivotX() + " pivotX");
+        Log.d(TAG, filterChooser.getWidth() + " width");
+        filterChooser.setPivotX(filterChooser.getWidth());
+        if (filterExpand) {
+//            filterChooser.setLayoutParams(new LinearLayout.LayoutParams(filterChooser.getWidth() / 10, filterChooser.getHeight()));
+            ViewCompat.animate(filterChooser)
+//                    .alpha(0)
+                    .scaleX(0)
+                    .setDuration(300)
+                    .setListener(new ViewPropertyAnimatorListener() {
+                        @Override
+                        public void onAnimationStart(View view) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(View view) {
+                            filterChooser.setVisibility(View.INVISIBLE);
                         }
 
                         @Override
@@ -767,8 +862,14 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
                         }
                     });
         } else {
+//            if(first) {
+//                first = false;
+//            } else {
+//                filterChooser.setLayoutParams(new LinearLayout.LayoutParams(filterChooser.getWidth() * 10, filterChooser.getHeight()));
+//            }
             ViewCompat.animate(filterChooser)
-                    .alpha(1)
+//                    .alpha(1)
+                    .scaleX(1)
                     .setDuration(300)
                     .setListener(new ViewPropertyAnimatorListener() {
                         @Override
@@ -794,13 +895,13 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     @OnClick(R.id.home_map_food_filter_btn)
     public void onFoodFilterClick() {
         if(!filterFood) {
-            foodFilter.setColorFilter(Color.parseColor("#3FBE37"));
-            sightFilter.setColorFilter(Color.parseColor("#777777"));
+            foodFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_selected));
+            sightFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_unselected));
             filterSight = false;
             fetchDataForFilter(true, false);
         }
         else {
-            foodFilter.setColorFilter(Color.parseColor("#777777"));
+            foodFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_unselected));
             fetchDataForFilter(false, false);
         }
         filterFood = !filterFood;
@@ -809,13 +910,13 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
     @OnClick(R.id.home_map_view_filter_btn)
     public void onSightFilterClick() {
         if(!filterSight) {
-            sightFilter.setColorFilter(Color.parseColor("#3FBE37"));
-            foodFilter.setColorFilter(Color.parseColor("#777777"));
+            sightFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_selected));
+            foodFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_unselected));
             filterFood = false;
             fetchDataForFilter(false, true);
         }
         else {
-            sightFilter.setColorFilter(Color.parseColor("#777777"));
+            sightFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_unselected));
             fetchDataForFilter(false, false);
         }
         filterSight = !filterSight;
@@ -839,7 +940,7 @@ public class HomeMapFragment extends Fragment implements OnMapReadyCallback,
             @Override
             public void done(List<PicturePost> objects, ParseException e) {
                 if(e != null) {
-                    Toast.makeText(getActivity(), "server error", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getActivity(), "server error", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 for(PicturePost post : objects) {

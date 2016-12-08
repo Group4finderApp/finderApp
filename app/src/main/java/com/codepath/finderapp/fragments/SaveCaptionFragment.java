@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -144,19 +145,27 @@ public class SaveCaptionFragment extends DialogFragment {
 
             @Override
             public void onClick(View v) {
-                if (isFoodFilter == true) {
-                    isFoodFilter = false;
-                    foodFilter.setImageResource(R.drawable.ic_food_filter_grey);
-                    sightFilter.setImageResource(R.drawable.ic_sight_filter);
+//                if (isFoodFilter == true) {
+//                    isFoodFilter = false;
+//                    foodFilter.setImageResource(R.drawable.ic_food_filter_grey);
+//                    sightFilter.setImageResource(R.drawable.ic_sight_filter);
+//                    foodFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_unselected));
+//                    sightFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_selected));
+//
+//
+//                }
+//                else {
+//                    isFoodFilter = true;
+//                    foodFilter.setImageResource(R.drawable.ic_food_filter);
+//                    sightFilter.setImageResource(R.drawable.ic_sight_filter_grey);
+//                    foodFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_selected));
+//                    sightFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_unselected));
+//
+//                }
+                isFoodFilter = true;
+                foodFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_selected));
+                sightFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_unselected));
 
-
-                }
-                else {
-                    isFoodFilter = true;
-                    foodFilter.setImageResource(R.drawable.ic_food_filter);
-                    sightFilter.setImageResource(R.drawable.ic_sight_filter_grey);
-
-                }
 
 
             }
@@ -168,19 +177,26 @@ public class SaveCaptionFragment extends DialogFragment {
 
             @Override
             public void onClick(View v) {
-                if (isFoodFilter == true) {
-                    isFoodFilter = false;
-                    sightFilter.setImageResource(R.drawable.ic_sight_filter);
-                    foodFilter.setImageResource(R.drawable.ic_food_filter_grey);
-
-
-                }
-                else {
-                    isFoodFilter = true;
-                    sightFilter.setImageResource(R.drawable.ic_sight_filter_grey);
-                    foodFilter.setImageResource(R.drawable.ic_food_filter);
-
-                }
+//                if (isFoodFilter == true) {
+//                    isFoodFilter = false;
+//                    sightFilter.setImageResource(R.drawable.ic_sight_filter);
+//                    foodFilter.setImageResource(R.drawable.ic_food_filter_grey);
+//                    sightFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_selected));
+//                    foodFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_unselected));
+//
+//
+//                }
+//                else {
+//                    isFoodFilter = true;
+//                    sightFilter.setImageResource(R.drawable.ic_sight_filter_grey);
+//                    foodFilter.setImageResource(R.drawable.ic_food_filter);
+//                    sightFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_unselected));
+//                    foodFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_selected));
+//
+//                }
+                isFoodFilter = false;
+                sightFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_selected));
+                foodFilter.setColorFilter(ContextCompat.getColor(getActivity(), R.color.icon_unselected));
 
 
             }
