@@ -92,31 +92,34 @@ public class PhotoScrollFragment extends Fragment {
 
     private void loadBitmap(final int index, final ImageView v) {
         try {
+            Target t = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    int initialSelection = getArguments().getInt(startIndexKey, -1);
+                    Bitmap scaledbitmap = Bitmap.createScaledBitmap(bitmap,60,60,false);
+                    //set to image view
+                    v.setImageBitmap(scaledbitmap);
+                    if (initialSelection == index) {
+                        previousChosen = index;
+                        setThumbnailSelection(v, true);
+                    }
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                }
+            };
+            //set a tag
+            v.setTag(t);
             Picasso.with(getContext())
                     .load(myPhotos.get(index).getImage().getFile())
                     .resize(60, 60)
-                    .into(new Target() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                            int initialSelection = getArguments().getInt(startIndexKey, -1);
-                            Bitmap scaledbitmap = Bitmap.createScaledBitmap(bitmap,60,60,false);
-                            //set to image view
-                            v.setImageBitmap(scaledbitmap);
-                            if (initialSelection == index) {
-                                previousChosen = index;
-                                setThumbnailSelection(v, true);
-                            }
-                        }
-
-                        @Override
-                        public void onBitmapFailed(Drawable errorDrawable) {
-                        }
-
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                        }
-                    });
+                    .into(t);
         } catch (ParseException e) {
             e.printStackTrace();
         }
