@@ -3,6 +3,8 @@ package co.geeksters.googleplaceautocomplete.lib;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit.http.HEAD;
+
 /**
  * Created by hero3 on 19/12/14.
  */
@@ -15,6 +17,7 @@ public class GooglePlace {
     String reference;
 
     ArrayList<String> terms;
+
     public GooglePlace() {
         this.terms = new ArrayList<>();
     }

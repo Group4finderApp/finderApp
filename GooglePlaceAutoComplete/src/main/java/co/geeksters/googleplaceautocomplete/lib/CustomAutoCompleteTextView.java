@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import co.geeksters.googleplaceautocomplete.R;
+import retrofit.http.HEAD;
 
 /**
  * Created by hero3 on 19/12/14.
