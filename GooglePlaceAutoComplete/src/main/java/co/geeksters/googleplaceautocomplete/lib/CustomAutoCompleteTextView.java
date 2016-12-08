@@ -44,6 +44,8 @@ public class CustomAutoCompleteTextView extends AutoCompleteTextView {
         this.setThreshold(1);
 
         this.addTextChangedListener(new CustomTextWatcher(this));
+
+        this.googlePlace = new GooglePlace();
     }
 
     /** Returns the place description corresponding to the selected item */

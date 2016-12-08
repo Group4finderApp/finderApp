@@ -19,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0.8"
+            android:hint="Search destination"
             android:background="@android:color/transparent"
             whatever:key="AIzaSyDDjT9ri_FVK40KVzxmvsYBhKv10BfHu_0"
             whatever:type="(cities)"

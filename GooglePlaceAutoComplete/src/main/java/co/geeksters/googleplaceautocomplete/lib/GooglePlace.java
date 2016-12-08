@@ -15,6 +15,9 @@ public class GooglePlace {
     String reference;
 
     ArrayList<String> terms;
+    public GooglePlace() {
+        this.terms = new ArrayList<>();
+    }
 
     public String getDescription() {
         return description;
@@ -66,7 +69,11 @@ public class GooglePlace {
     }
 
     public String getCity(){
-        return getTerms().get(0).toString();
+        String city = "";
+        if (getTerms().size() > 0) {
+            city = getTerms().get(0);
+        }
+        return city;
     }
 
     public String getCountry(){
